@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Coordination Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-top">
+            <div class="logo-area">
+                <img src="logo.png" alt="SURYA Foundation Logo" class="logo">
+                <span class="logo-text">SURYA <span class="logo-sub">FOUNDATION</span></span>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#home" id="nav-home">Начало</a></li>
+                    <li><a href="#initiatives" id="nav-initiatives">Каузи</a></li>
+                    <li><a href="#about" id="nav-about">За нас</a></li>
+                    <li><a href="#help" id="nav-help">Помощен център</a></li>
+                    <li><a href="#contacts" id="nav-contacts">Контакти</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <span class="lang-switch">
+                    <img src="bg-flag.png" alt="BG" class="flag"> <img src="en-flag.png" alt="EN" class="flag">
+                </span>
+                <a href="#" class="social-icon" title="Facebook">&#xf09a;</a>
+                <a href="#" class="social-icon" title="Instagram">&#xf16d;</a>
+                <a href="#" class="social-icon" title="LinkedIn">&#xf0e1;</a>
+                <button class="donate-btn">Дари сега</button>
+                <button class="login-btn" id="loginBtn">Вход</button>
+                <button class="signup-btn" id="signupBtn">Регистрация</button>
+            </div>
+        </div>
+    </header>
+    <main id="main-content">
+        <section class="hero-section">
+            <div class="hero-text">
+                <h2>Стани доброволец</h2>
+                <p>Приканваме всеки, който споделя нашата страст и визия, да се присъедини към нас в нашия път към създаването на значима промяна.</p>
+            </div>
+        </section>
+        <section class="community-section">
+            <div class="community-text">
+                <h2>Станете част от нашата общност</h2>
+                <p>Ако желаете да станете част от нашата доброволческа общност, моля попълнете формата за регистрация. След регистрацията ще получавате редовни актуализации за нашите инициативи и ще имате възможност да участвате в различни активности.</p>
+                <p>Разчитаме на нашите доброволци, за да превръщаме идеите в реалност и да създаваме по-добро бъдеще за всички.</p>
+            </div>
+            <div class="community-img">
+                <img src="volunteers.jpg" alt="Volunteers working" class="volunteer-img">
+            </div>
+        </section>
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeLogin">&times;</span>
+                <h3>Вход</h3>
+                <form id="loginForm">
+                    <input type="text" placeholder="Потребителско име" required>
+                    <input type="password" placeholder="Парола" required>
+                    <button type="submit">Вход</button>
+                </form>
+            </div>
+        </div>
+        <!-- Signup Modal -->
+        <div id="signupModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeSignup">&times;</span>
+                <h3>Регистрация</h3>
+                <form id="signupForm">
+                    <input type="text" placeholder="Потребителско име" required>
+                    <input type="email" placeholder="Имейл" required>
+                    <input type="password" placeholder="Парола" required>
+                    <button type="submit">Регистрация</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 SURYA Foundation</p>
+    </footer>
+    <script src="app.js"></script>
+</body>
+</html>

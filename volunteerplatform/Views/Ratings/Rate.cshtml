@@ -1,0 +1,41 @@
+@model volunteerplatform.Models.Rating
+
+@{
+    ViewData["Title"] = "Rate Volunteer";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    Rate Volunteer Performance
+                </div>
+                <div class="card-body">
+                    <form asp-action="Rate">
+                        <input type="hidden" asp-for="InitiativeId" />
+                        <input type="hidden" asp-for="VolunteerId" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Score (1-5)</label>
+                            <select asp-for="Score" class="form-select">
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Very Good</option>
+                                <option value="3">3 - Good</option>
+                                <option value="2">2 - Fair</option>
+                                <option value="1">1 - Poor</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Comments</label>
+                            <textarea asp-for="Comment" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Submit Rating</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

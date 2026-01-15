@@ -1,0 +1,37 @@
+@model IEnumerable<volunteerplatform.Models.Enrolment>
+
+@{
+    ViewData["Title"] = "My Applications";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 fw-bold">My Applications</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">You haven't applied to any missions yet. <a asp-controller="Initiatives" asp-action="Index">Find one now!</a></div>
+    }
+    else
+    {
+        <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title fw-bold">@item.Initiative.Title</h5>
+                            <span class="badge @(item.Status == volunteerplatform.Models.EnrolmentStatus.Approved ? "bg-success" : 
+                                                 item.Status == volunteerplatform.Models.EnrolmentStatus.Rejected ? "bg-danger" : "bg-warning")">
+                                @item.Status
+                            </span>
+                        </div>
+                        <p class="text-muted mb-2">Applied on: @item.AppliedOn.ToString("g")</p>
+                        <a asp-controller="Initiatives" asp-action="Details" asp-route-id="@item.InitiativeId" class="btn btn-sm btn-outline-primary">View Mission</a>
+                    </div>
+                </div>
+            </div>
+        }
+        </div>
+    }
+</div>

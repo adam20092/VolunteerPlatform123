@@ -1,0 +1,29 @@
+@model IEnumerable<volunteerplatform.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "All Users";
+}
+
+<div class="container mt-5">
+    <h2>All Users</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Id</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Email</td>
+                    <td>@item.FullName</td>
+                    <td>@item.Id</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-action="Index" class="btn btn-secondary">Back to Dashboard</a>
+</div>

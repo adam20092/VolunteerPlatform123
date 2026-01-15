@@ -1,0 +1,84 @@
+@model volunteerplatform.Models.Initiative
+
+@{
+    ViewData["Title"] = "Manage Candidates";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Manage Candidates</h2>
+            <p class="text-muted">For: @Model.Title</p>
+        </div>
+        <a asp-controller="Initiatives" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to Details</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Volunteer</th>
+                        <th>Applied On</th>
+                        <th>Skills</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Enrolments.OrderByDescending(e => e.AppliedOn))
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold">@item.Volunteer.FullName</div>
+                                <div class="small text-muted">@item.Volunteer.Email</div>
+                            </td>
+                            <td>@item.AppliedOn.ToString("g")</td>
+                            <td>
+                                <!-- Placeholder if we add skills to user profile later -->
+                                <span class="badge bg-secondary">N/A</span>
+                            </td>
+                            <td>
+                                <span class="badge @(item.Status == volunteerplatform.Models.EnrolmentStatus.Approved ? "bg-success" : 
+                                                     item.Status == volunteerplatform.Models.EnrolmentStatus.Rejected ? "bg-danger" : "bg-warning")">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                @if(item.Status == volunteerplatform.Models.EnrolmentStatus.Pending)
+                                {
+                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="status" value="Approved" />
+                                        <button type="submit" class="btn btn-sm btn-success me-1"><i class="bi bi-check-lg"></i> Approve</button>
+                                    </form>
+                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="status" value="Rejected" />
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-x-lg"></i> Reject</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-light" disabled>Processed</button>
+                                    @if(item.Status == volunteerplatform.Models.EnrolmentStatus.Approved)
+                                    {
+                                        <a asp-controller="Ratings" asp-action="Rate" asp-route-initiativeId="@Model.Id" asp-route-volunteerId="@item.VolunteerId" class="btn btn-sm btn-outline-warning ms-1">
+                                            <i class="bi bi-star"></i> Rate
+                                        </a>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Enrolments.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">No applications yet.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

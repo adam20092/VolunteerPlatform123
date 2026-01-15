@@ -1,0 +1,76 @@
+@model volunteerplatform.Controllers.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-5">
+    <h1 class="display-6 fw-bold mb-4">Admin Dashboard</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Volunteers</h5>
+                    <p class="card-text display-4">@Model.TotalVolunteers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Organizers</h5>
+                    <p class="card-text display-4">@Model.TotalOrganizers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Missions</h5>
+                    <p class="card-text display-4">@Model.TotalMission</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">Completed</h5>
+                    <p class="card-text display-4 text-dark">@Model.CompletedMissions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white fw-bold">
+                    User Management
+                </div>
+                <div class="card-body">
+                     <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Full Name</th>
+                                <th>Id</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.RecentUsers)
+                            {
+                                <tr>
+                                    <td>@user.Email</td>
+                                    <td>@user.FullName</td>
+                                    <td>@user.Id</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <a asp-action="Users" class="btn btn-outline-primary w-100">View All Users</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
