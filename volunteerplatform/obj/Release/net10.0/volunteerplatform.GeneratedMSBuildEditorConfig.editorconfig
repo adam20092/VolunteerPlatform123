@@ -1,0 +1,103 @@
+is_global = true
+build_property.TargetFramework = net10.0
+build_property.TargetFramework = net10.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.RootNamespace = volunteerplatform
+build_property.RootNamespace = volunteerplatform
+build_property.ProjectDir = C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Admin/Users.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVXNlcnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Enrolments/Manage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW5yb2xtZW50c1xNYW5hZ2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Enrolments/MyApplications.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW5yb2xtZW50c1xNeUFwcGxpY2F0aW9ucy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Initiatives/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5pdGlhdGl2ZXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Initiatives/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5pdGlhdGl2ZXNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Initiatives/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5pdGlhdGl2ZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Ratings/Rate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmF0aW5nc1xSYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Shared/_LoginPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Mb2dpblBhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-rs8kxolx3n

@@ -232,3 +232,16 @@ C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerp
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Debug\net10.0\compressed\p7ve04l8bg-{0}-khdnqo8wgm-khdnqo8wgm.gz
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Debug\net10.0\compressed\14r892k69e-{0}-qxa0zovuxx-qxa0zovuxx.gz
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Debug\net10.0\compressed\khp2zex4bm-{0}-qxa0zovuxx-qxa0zovuxx.gz
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Debug\net10.0\volunteerplatform.sourcelink.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\publish\web.config
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\web.config
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\appsettings.Development.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\appsettings.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\publish\appsettings.Development.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\publish\appsettings.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\publish\volunteerplatform.deps.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\publish\volunteerplatform.runtimeconfig.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\publish\volunteerplatform.staticwebassets.endpoints.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\volunteerplatform.deps.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\volunteerplatform.runtimeconfig.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\volunteerplatform.staticwebassets.endpoints.json
