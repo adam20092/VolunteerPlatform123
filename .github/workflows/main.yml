@@ -1,0 +1,48 @@
+name: Deploy to SmarterASP
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Изтегляне на кода от репозиторито
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # 2. Инсталиране на .NET 10
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '10.0.x'
+
+    # 3. Възстановяване на зависимости (Restore)
+    - name: Restore Dependencies
+      run: dotnet restore "VolunteerPlatform/volunteerplatform/volunteerplatform.csproj"
+
+    # 4. Компилиране (Build)
+    - name: Build
+      run: dotnet build "VolunteerPlatform/volunteerplatform/volunteerplatform.csproj" --configuration Release --no-restore
+
+    # 5. Тестване (Test) - по желание, ако има тестове
+    # - name: Test
+    #   run: dotnet test "VolunteerPlatform/volunteerplatform/volunteerplatform.csproj" --no-build --verbosity normal
+
+    # 6. Публикуване (Publish)
+    - name: Publish
+      run: dotnet publish "VolunteerPlatform/volunteerplatform/volunteerplatform.csproj" --configuration Release --no-build --output ./publish_output
+
+    # 7. Деплой към SmarterASP чрез FTP
+    - name: FTP Deploy
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./publish_output/
+        server-dir: / # Важно: Проверете дали root директорията в SmarterASP е '/' или '/site1/'
