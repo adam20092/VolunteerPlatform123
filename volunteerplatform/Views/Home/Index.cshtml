@@ -3,87 +3,109 @@
 }
 
 <!-- Hero Section -->
-<section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="hero-title">
-                    Empowering Communities Through <span class="text-primary-custom">Volunteering</span>
-                </h1>
-                <p class="hero-subtitle">
-                    Join thousands of volunteers making a difference. Find initiatives that match your skills and passion.
-                </p>
-                <div class="d-flex gap-3">
-                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-5">Get Started</a>
-                    <a href="#how-it-works" class="btn btn-outline-dark btn-lg px-5" style="border-radius: 50px;">Learn More</a>
-                </div>
+<section class="hero-section-premium text-center text-white d-flex align-items-center">
+    <div class="container py-5">
+        <h1 class="display-3 fw-bold mb-3 hero-text-shadow">Travel differently, <br/> <span class="text-white">connect globally</span></h1>
+        <p class="lead mb-5 mx-auto hero-text-shadow" style="max-width: 800px; font-size: 1.5rem;">
+            The largest and safest community for cultural exchange, working holiday, volunteering, house & pet sitting in 170 countries.
+        </p>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <form asp-controller="Initiatives" asp-action="Index" method="get" class="search-form-hero">
+                    <div class="input-group input-group-lg bg-white rounded-pill overflow-hidden p-1 shadow-lg border-0">
+                        <input type="text" name="searchString" class="form-control border-0 ps-4 py-3 no-focus" placeholder="Type in a region, country, city ..." aria-label="Search location">
+                        <button class="btn btn-primary rounded-pill px-4 me-1 d-flex align-items-center justify-content-center" type="submit" style="height: 52px; width: 60px;">
+                            <i class="bi bi-search fs-4"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="col-lg-6 text-center mt-5 mt-lg-0">
-                <!-- Placeholder for Hero Image -->
-                <img src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" 
-                     alt="Volunteers High Fiving" 
-                     class="img-fluid rounded-4 shadow-lg" 
-                     style="max-height: 400px; object-fit: cover;">
-            </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-4 mt-5 fw-bold hero-text-shadow">
+            <a href="#how-it-works" class="text-white text-decoration-none hover-underline"><i class="bi bi-question-circle me-2"></i>How it works</a>
+            <a asp-controller="Account" asp-action="Register" class="text-white text-decoration-none hover-underline"><i class="bi bi-house-door me-2"></i>Join as a Host</a>
         </div>
     </div>
 </section>
 
-<!-- Features / Call to Action -->
-<div class="container my-5" id="how-it-works">
+<!-- How It Works Section -->
+<div class="container my-5 py-5" id="how-it-works">
     <div class="row text-center mb-5">
         <div class="col-lg-8 mx-auto">
             <h2 class="section-title">How It Works</h2>
-            <p class="lead text-muted">A simple path to making a big impact.</p>
+            <p class="lead text-muted">Follow these simple steps to start making a real difference in your community.</p>
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-md-4">
-            <a asp-controller="Initiatives" asp-action="Index" class="text-decoration-none text-dark">
-                <div class="card h-100 p-4 text-center">
-                    <div class="card-body">
-                        <div class="feature-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                            </svg>
-                        </div>
-                        <h3 class="h4 mb-3">Find Initiatives</h3>
-                        <p class="text-muted">Browse through hundreds of volunteering opportunities in your area or remotely.</p>
-                    </div>
+    <div class="row g-5">
+        <!-- Step 1 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="how-it-works-step text-center">
+                <div class="step-number">1</div>
+                <div class="step-icon">
+                    <i class="bi bi-person-plus"></i>
                 </div>
-            </a>
+                <h4 class="fw-bold mb-3">Create Account</h4>
+                <p class="text-muted mb-0">
+                    Sign up as a <strong>Volunteer</strong> or <strong>Organizer</strong>. Complete your profile to highlight your skills.
+                </p>
+                <div class="mt-3">
+                    <a asp-controller="Account" asp-action="Register" class="text-primary fw-bold small text-decoration-none">Sign Up Now <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-            <a asp-controller="Account" asp-action="Register" class="text-decoration-none text-dark">
-                <div class="card h-100 p-4 text-center">
-                    <div class="card-body">
-                        <div class="feature-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
-                                <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4 1 1 1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                                <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
-                            </svg>
-                        </div>
-                        <h3 class="h4 mb-3">Join a Team</h3>
-                        <p class="text-muted">Sign up and become part of a dedicated team working towards a common goal.</p>
-                    </div>
+
+        <!-- Step 2 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="how-it-works-step text-center">
+                <div class="step-number">2</div>
+                <div class="step-icon">
+                    <i class="bi bi-geo-alt"></i>
                 </div>
-            </a>
+                <h4 class="fw-bold mb-3">Find Missions</h4>
+                <p class="text-muted mb-0">
+                    Use our <strong>Smart Search</strong> to discover volunteering opportunities near you that match your skills.
+                </p>
+                <div class="mt-3">
+                    <a asp-controller="Initiatives" asp-action="Index" class="text-primary fw-bold small text-decoration-none">Explore Map <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-            <a asp-controller="Enrolments" asp-action="MyApplications" class="text-decoration-none text-dark">
-                <div class="card h-100 p-4 text-center">
-                    <div class="card-body">
-                        <div class="feature-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M0 0h1v15h15v1H0V0Zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5Z"/>
-                            </svg>
-                        </div>
-                        <h3 class="h4 mb-3">Track Impact</h3>
-                        <p class="text-muted">See the difference you make with detailed reports and activity history.</p>
-                    </div>
+
+        <!-- Step 3 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="how-it-works-step text-center">
+                <div class="step-number">3</div>
+                <div class="step-icon">
+                    <i class="bi bi-check-circle"></i>
                 </div>
-            </a>
+                <h4 class="fw-bold mb-3">Apply & Join</h4>
+                <p class="text-muted mb-0">
+                    Click <strong>"Apply Now"</strong> on a mission. Once the organizer approves, you're officially on the team!
+                </p>
+                <div class="mt-3">
+                    <span class="text-muted small">Real-time approval track</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="how-it-works-step text-center">
+                <div class="step-number">4</div>
+                <div class="step-icon">
+                    <i class="bi bi-award"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Track Impact</h4>
+                <p class="text-muted mb-0">
+                    Earn points, climb the <strong>Leaderboard</strong>, and receive badges as you complete missions.
+                </p>
+                <div class="mt-3">
+                    <a asp-controller="Home" asp-action="Leaderboard" class="text-primary fw-bold small text-decoration-none">View Hall of Fame <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

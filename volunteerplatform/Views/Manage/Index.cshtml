@@ -1,0 +1,81 @@
+@model volunteerplatform.Models.ViewModels.IndexViewModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container mt-5">
+    <h2 class="fw-bold mb-4">@ViewData["Title"]</h2>
+    <partial name="_StatusMessage" model="Model.StatusMessage" />
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group shadow-sm mb-4">
+                <a asp-action="Index" class="list-group-item list-group-item-action active">Profile Details</a>
+                <a asp-action="ChangePassword" class="list-group-item list-group-item-action">Password Settings</a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="card shadow-sm border-0 rounded-4 p-4">
+                <form method="post">
+                    <div asp-validation-summary="All" class="text-danger small"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label text-muted small"></label>
+                        <input asp-for="Username" class="form-control" disabled />
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label fw-bold small"></label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="PhoneNumber" class="form-label fw-bold small"></label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    @if (User.IsInRole("Volunteer"))
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="Age" class="form-label fw-bold small"></label>
+                                <input asp-for="Age" class="form-control" />
+                            </div>
+                            <div class="col-md-8">
+                                <label asp-for="Location" class="form-label fw-bold small"></label>
+                                <input asp-for="Location" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Skills" class="form-label fw-bold small"></label>
+                            <input asp-for="Skills" class="form-control" placeholder="e.g. Cooking, Teaching, First Aid" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Availability" class="form-label fw-bold small"></label>
+                            <input asp-for="Availability" class="form-control" placeholder="e.g. Weekends, Evenings" />
+                        </div>
+                    }
+
+                    @if (User.IsInRole("Organizer"))
+                    {
+                        <div class="mb-3">
+                            <label asp-for="OrganizationName" class="form-label fw-bold small"></label>
+                            <input asp-for="OrganizationName" class="form-control" />
+                        </div>
+                    }
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary px-5 rounded-pill shadow-sm">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

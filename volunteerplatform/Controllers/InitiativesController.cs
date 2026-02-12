@@ -19,10 +19,21 @@ namespace volunteerplatform.Controllers
         }
 
         // GET: Initiatives
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            var initiatives = await _context.Initiatives.Include(i => i.Organizer).ToListAsync();
-            return View(initiatives);
+            ViewData["CurrentFilter"] = searchString;
+
+            var initiatives = from i in _context.Initiatives.Include(i => i.Organizer)
+                             select i;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                initiatives = initiatives.Where(s => s.Title.Contains(searchString) 
+                                               || s.Location.Contains(searchString)
+                                               || s.Description.Contains(searchString));
+            }
+
+            return View(await initiatives.ToListAsync());
         }
 
         // GET: Initiatives/Details/5
