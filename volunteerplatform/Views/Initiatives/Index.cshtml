@@ -1,7 +1,11 @@
+@using Microsoft.AspNetCore.Identity
+@using volunteerplatform.Models
+@inject UserManager<ApplicationUser> UserManager
 @model IEnumerable<volunteerplatform.Models.Initiative>
 
 @{
     ViewData["Title"] = "Initiatives";
+    var currentUser = await UserManager.GetUserAsync(User);
 }
 
 <div class="container mt-5">
@@ -38,7 +42,13 @@
 
                     </div>
                     <div class="card-footer bg-white border-0 pb-4 pt-0">
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary w-100 rounded-pill">View Details</a>
+                        <div class="d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary flex-grow-1 rounded-pill">View Details</a>
+                            @if (currentUser != null && (item.OrganizerId == currentUser.Id || User.IsInRole("Admin")))
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger rounded-pill"><i class="bi bi-trash"></i></a>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>

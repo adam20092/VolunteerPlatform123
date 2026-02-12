@@ -82,5 +82,46 @@ namespace volunteerplatform.Controllers
                 .ToListAsync();
             return View("Index", myInitiatives);
         }
+
+        // GET: Initiatives/Delete/5
+        [Authorize(Roles = "Organizer,Admin")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var initiative = await _context.Initiatives
+                .Include(i => i.Organizer)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (initiative == null) return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+            if (initiative.OrganizerId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            return View(initiative);
+        }
+
+        // POST: Initiatives/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Organizer,Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var initiative = await _context.Initiatives.FindAsync(id);
+            if (initiative == null) return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+            if (initiative.OrganizerId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            _context.Initiatives.Remove(initiative);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

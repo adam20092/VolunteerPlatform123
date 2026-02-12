@@ -1,0 +1,108 @@
+@model volunteerplatform.Models.ViewModels.LeaderboardViewModel
+
+@{
+    ViewData["Title"] = "Volunteer Leaderboard";
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-secondary">
+            <i class="bi bi-trophy-fill text-warning me-2"></i> Volunteer Hall of Fame
+        </h1>
+        <p class="lead text-muted">Celebrating our most dedicated community heroes</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-dark text-white py-3">
+                    <div class="row align-items-center fw-bold">
+                        <div class="col-2 text-center">Rank</div>
+                        <div class="col-5">Volunteer</div>
+                        <div class="col-2 text-center">Missions</div>
+                        <div class="col-3 text-center">Total Points</div>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    @foreach (var v in Model.TopVolunteers)
+                    {
+                        <div class="list-group-item list-group-item-action py-4 border-bottom @(v.Rank <= 3 ? "bg-light" : "")">
+                            <div class="row align-items-center">
+                                <div class="col-2 text-center">
+                                    @if (v.Rank == 1)
+                                    {
+                                        <span class="display-6">🥇</span>
+                                    }
+                                    else if (v.Rank == 2)
+                                    {
+                                        <span class="display-6">🥈</span>
+                                    }
+                                    else if (v.Rank == 3)
+                                    {
+                                        <span class="display-6">🥉</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="h4 text-muted fw-bold">@v.Rank</span>
+                                    }
+                                </div>
+                                <div class="col-5">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle me-3">
+                                            @v.FullName.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-0 fw-bold">@v.FullName</h5>
+                                            <span class="badge @v.BadgeColor rounded-pill small">@v.Badge</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2 text-center">
+                                    <span class="h5 fw-bold text-primary">@v.CompletedMissions</span>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <span class="h4 fw-bold text-success">@v.TotalPoints</span>
+                                    <small class="text-muted d-block small">pts</small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                    @if (!Model.TopVolunteers.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-star text-muted display-1"></i>
+                            <p class="mt-3 text-muted">No volunteers on the leaderboard yet. Be the first!</p>
+                            <a asp-controller="Initiatives" asp-action="Index" class="btn btn-primary mt-2">Find a Mission</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        width: 45px;
+        height: 45px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    .list-group-item {
+        transition: transform 0.2s ease;
+    }
+    
+    .list-group-item:hover {
+        transform: scale(1.02);
+        z-index: 10;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+</style>

@@ -58,12 +58,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Home/Leaderboard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxMZWFkZXJib2FyZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Initiatives/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5pdGlhdGl2ZXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Initiatives/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5pdGlhdGl2ZXNcRGVsZXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Initiatives/Details.cshtml]

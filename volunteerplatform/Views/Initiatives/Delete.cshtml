@@ -1,0 +1,45 @@
+@model volunteerplatform.Models.Initiative
+
+@{
+    ViewData["Title"] = "Delete Initiative";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <i class="bi bi-exclamation-triangle text-danger display-1 mb-4"></i>
+            <h1 class="display-5 fw-bold text-dark">Are you sure?</h1>
+            <p class="lead text-muted mb-5">You are about to delete the initiative <strong>"@Model.Title"</strong>. This action cannot be undone and all enrollments will be lost.</p>
+
+            <div class="card shadow-sm border-0 rounded-4 mb-5 text-start">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold border-bottom pb-2 mb-3">Initiative Summary</h5>
+                    <div class="row">
+                        <div class="col-sm-3 text-muted">Title:</div>
+                        <div class="col-sm-9 fw-bold">@Model.Title</div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-sm-3 text-muted">Location:</div>
+                        <div class="col-sm-9">@Model.Location</div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-sm-3 text-muted">Date:</div>
+                        <div class="col-sm-9">@Model.DateAndTime.ToString("f")</div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-sm-3 text-muted">Organizer:</div>
+                        <div class="col-sm-9">@(Model.Organizer?.FullName ?? "Unknown")</div>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <div class="d-flex gap-3 justify-content-center">
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-lg px-5 rounded-pill">Cancel</a>
+                    <button type="submit" class="btn btn-danger btn-lg px-5 rounded-pill shadow-sm">Delete Forever</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
