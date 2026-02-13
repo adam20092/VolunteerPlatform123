@@ -37,5 +37,10 @@ namespace volunteerplatform.Models
         public ApplicationUser? Organizer { get; set; }
 
         public ICollection<Enrolment>? Enrolments { get; set; }
+
+        // Funding specifics
+        public decimal? TargetAmount { get; set; }
+        public decimal CurrentAmount { get; set; } = 0;
+        public ICollection<Donation>? Donations { get; set; }
     }
 }

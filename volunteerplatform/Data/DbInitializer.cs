@@ -90,7 +90,9 @@ namespace volunteerplatform.Data
                         OrganizerId = organizerUser.Id,
                         Status = MissionStatus.Active,
                         Latitude = 42.688,
-                        Longitude = 23.336
+                        Longitude = 23.336,
+                        TargetAmount = 500,
+                        CurrentAmount = 150
                     },
                     new Initiative
                     {
@@ -103,7 +105,9 @@ namespace volunteerplatform.Data
                         OrganizerId = organizerUser.Id,
                         Status = MissionStatus.Active,
                         Latitude = 42.135,
-                        Longitude = 24.745
+                        Longitude = 24.745,
+                        TargetAmount = 1000,
+                        CurrentAmount = 450
                     },
                     new Initiative
                     {
@@ -116,7 +120,9 @@ namespace volunteerplatform.Data
                         OrganizerId = organizerUser.Id,
                         Status = MissionStatus.Active,
                         Latitude = 43.214,
-                        Longitude = 27.914
+                        Longitude = 27.914,
+                        TargetAmount = 300,
+                        CurrentAmount = 50
                     }
                 };
 

@@ -245,4 +245,4 @@ C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerp
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\volunteerplatform.runtimeconfig.json
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Debug\net10.0\publish\volunteerplatform.staticwebassets.endpoints.json
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Debug\net10.0\compressed\71z5fp8n6n-{0}-12tsufcaoy-12tsufcaoy.gz
-C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Debug\net10.0\compressed\p7ve04l8bg-{0}-pmctgadiob-pmctgadiob.gz
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Debug\net10.0\compressed\p7ve04l8bg-{0}-ci2l9v4b8z-ci2l9v4b8z.gz

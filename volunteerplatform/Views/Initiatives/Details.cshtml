@@ -88,6 +88,26 @@
                         </div>
                     </div>
 
+                     @if (Model.TargetAmount > 0)
+                     {
+                         <div class="mb-4 bg-light p-3 rounded-4 border">
+                             <h6 class="fw-bold mb-2">Funding Progress</h6>
+                             @{
+                                 double fundProgress = (double)(Model.CurrentAmount / Model.TargetAmount.Value * 100);
+                             }
+                             <div class="d-flex justify-content-between small text-muted mb-1">
+                                 <span>$@Model.CurrentAmount</span>
+                                 <span>Target: $@Model.TargetAmount</span>
+                             </div>
+                             <div class="progress rounded-pill mb-3" style="height: 10px;">
+                                 <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: @(fundProgress)%"></div>
+                             </div>
+                             <a asp-controller="Funding" asp-action="Donate" asp-route-id="@Model.Id" class="btn btn-success btn-lg w-100 rounded-pill shadow-sm">
+                                 <i class="bi bi-heart me-2"></i>Donate Now
+                             </a>
+                         </div>
+                     }
+
                     @if(User.Identity.IsAuthenticated)
                     {
                          @if(User.IsInRole("Volunteer"))

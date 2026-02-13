@@ -14,6 +14,7 @@ namespace volunteerplatform.Data
         public DbSet<Initiative> Initiatives { get; set; }
         public DbSet<Enrolment> Enrolments { get; set; }
         public DbSet<Rating> Ratings { get; set; }
+        public DbSet<Donation> Donations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

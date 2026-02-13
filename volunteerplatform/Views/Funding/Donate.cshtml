@@ -1,0 +1,75 @@
+@model volunteerplatform.Models.Donation
+@{
+    var initiative = ViewBag.Initiative as volunteerplatform.Models.Initiative;
+    ViewData["Title"] = "Donate to " + initiative?.Title;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white py-4 text-center">
+                    <h3 class="fw-bold mb-0"><i class="bi bi-heart-fill me-2"></i> Support Mission</h3>
+                </div>
+                <div class="card-body p-4 p-lg-5">
+                    <div class="text-center mb-4">
+                        <h4 class="fw-bold text-secondary">@initiative?.Title</h4>
+                        <p class="text-muted small">Your contribution helps us achieve our goal!</p>
+                    </div>
+
+                    <div class="mb-4">
+                        @{
+                            double progress = 0;
+                            if (initiative?.TargetAmount > 0)
+                            {
+                                progress = (double)(initiative.CurrentAmount / initiative.TargetAmount.Value * 100);
+                            }
+                        }
+                        <div class="d-flex justify-content-between small text-muted mb-1">
+                            <span>Raised: $@initiative?.CurrentAmount</span>
+                            <span>Goal: $@initiative?.TargetAmount</span>
+                        </div>
+                        <div class="progress rounded-pill" style="height: 10px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: @(progress)%"></div>
+                        </div>
+                    </div>
+
+                    <form asp-action="ProcessDonation" method="post">
+                        <input type="hidden" asp-for="InitiativeId" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Amount" class="form-label fw-bold small">Donation Amount ($)</label>
+                            <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border">
+                                <span class="input-group-text bg-white border-0 ps-4 fw-bold text-success">$</span>
+                                <input asp-for="Amount" class="form-control border-0 py-3 no-focus" placeholder="e.g. 50" type="number" step="0.01" />
+                            </div>
+                            <span asp-validation-for="Amount" class="text-danger small ms-3"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Message" class="form-label fw-bold small">Leave a Message (Optional)</label>
+                            <textarea asp-for="Message" class="form-control rounded-4 shadow-sm" rows="3" placeholder="Write something inspiring..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm py-3 fw-bold">
+                                Confirm Contribution
+                            </button>
+                            <a asp-controller="Initiatives" asp-action="Details" asp-route-id="@initiative?.Id" class="btn btn-link text-muted text-decoration-none">
+                                Cancel and Return
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light border-0 py-3 text-center">
+                    <small class="text-muted"><i class="bi bi-shield-lock me-1"></i> Simulated testing payment - No real money will be charged.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
