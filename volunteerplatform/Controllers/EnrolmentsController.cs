@@ -99,5 +99,32 @@ namespace volunteerplatform.Controllers
 
             return RedirectToAction("Manage", new { id = enrolment.InitiativeId });
         }
+
+        // GET: Enrolments/Certificate/5
+        public async Task<IActionResult> Certificate(int id)
+        {
+            var enrolment = await _context.Enrolments
+                .Include(e => e.Initiative).ThenInclude(i => i.Organizer)
+                .Include(e => e.Volunteer)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (enrolment == null) return NotFound();
+
+            // Security check: Only the volunteer or an admin can see the certificate
+            var user = await _userManager.GetUserAsync(User);
+            if (enrolment.VolunteerId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            // Ensure certificate code exists
+            if (string.IsNullOrEmpty(enrolment.CertificateCode))
+            {
+                enrolment.CertificateCode = "VP-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
+                await _context.SaveChangesAsync();
+            }
+
+            return View(enrolment);
+        }
     }
 }

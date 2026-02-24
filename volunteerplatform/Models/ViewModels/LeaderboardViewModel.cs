@@ -9,11 +9,11 @@ namespace volunteerplatform.Models.ViewModels
 
     public class VolunteerStats
     {
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
         public int CompletedMissions { get; set; }
         public int TotalPoints { get; set; }
-        public string Badge { get; set; }
-        public string BadgeColor { get; set; }
+        public string Badge { get; set; } = string.Empty;
+        public string BadgeColor { get; set; } = string.Empty;
         public int Rank { get; set; }
     }
 }

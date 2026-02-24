@@ -26,8 +26,18 @@
                                 @item.Status
                             </span>
                         </div>
-                        <p class="text-muted mb-2">Applied on: @item.AppliedOn.ToString("g")</p>
-                        <a asp-controller="Initiatives" asp-action="Details" asp-route-id="@item.InitiativeId" class="btn btn-sm btn-outline-primary">View Mission</a>
+                         <p class="text-muted mb-2">Applied on: @item.AppliedOn.ToString("g")</p>
+                         <div class="mt-3 d-flex gap-2">
+                            <a asp-controller="Initiatives" asp-action="Details" asp-route-id="@item.InitiativeId" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                <i class="bi bi-info-circle me-1"></i> Details
+                            </a>
+                            @if (item.Status == volunteerplatform.Models.EnrolmentStatus.Approved && item.Initiative.Status == volunteerplatform.Models.MissionStatus.Finished)
+                            {
+                                <a asp-action="Certificate" asp-route-id="@item.Id" class="btn btn-sm btn-success rounded-pill px-3">
+                                    <i class="bi bi-patch-check me-1"></i> Certificate
+                                </a>
+                            }
+                         </div>
                     </div>
                 </div>
             </div>

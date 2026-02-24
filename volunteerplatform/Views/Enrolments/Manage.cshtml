@@ -10,8 +10,30 @@
             <h2 class="fw-bold">Manage Candidates</h2>
             <p class="text-muted">For: @Model.Title</p>
         </div>
-        <a asp-controller="Initiatives" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to Details</a>
+         <div class="d-flex gap-2">
+            @if (Model.Status != volunteerplatform.Models.MissionStatus.Finished)
+            {
+                <form asp-controller="Initiatives" asp-action="Finish" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Are you sure? This will finalize the mission and allow volunteers to receive certificates.')">
+                    <button type="submit" class="btn btn-success shadow-sm">
+                        <i class="bi bi-flag-fill me-2"></i> Finish Mission
+                    </button>
+                </form>
+            }
+            else
+            {
+                <span class="badge bg-secondary p-3 rounded-pill"><i class="bi bi-check-circle-fill me-2"></i>Mission Completed</span>
+            }
+            <a asp-controller="Initiatives" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to Details</a>
+        </div>
     </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
     <div class="card shadow-sm">
         <div class="card-body p-0">

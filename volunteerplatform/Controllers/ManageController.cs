@@ -21,7 +21,7 @@ namespace volunteerplatform.Controllers
         }
 
         [TempData]
-        public string StatusMessage { get; set; }
+        public string StatusMessage { get; set; } = null!;
 
         [HttpGet]
         public async Task<IActionResult> Index()

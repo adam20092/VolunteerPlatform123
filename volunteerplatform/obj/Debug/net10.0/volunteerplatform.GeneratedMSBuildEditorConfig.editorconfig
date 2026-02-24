@@ -46,6 +46,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVXNlcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Enrolments/Certificate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW5yb2xtZW50c1xDZXJ0aWZpY2F0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Enrolments/Manage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW5yb2xtZW50c1xNYW5hZ2UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -88,6 +92,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Initiatives/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5pdGlhdGl2ZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Initiatives/Map.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5pdGlhdGl2ZXNcTWFwLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Adam/Desktop/дипломна работа/VolunteerPlatform/volunteerplatform/Views/Manage/ChangePassword.cshtml]

@@ -35,6 +35,17 @@ namespace volunteerplatform.Controllers
 
             return View(await initiatives.ToListAsync());
         }
+        // GET: Initiatives/Map
+        public async Task<IActionResult> Map()
+        {
+            var initiatives = await _context.Initiatives
+                .Where(i => i.Status == MissionStatus.Active && i.Latitude != null && i.Longitude != null)
+                .ToListAsync();
+
+            return View(initiatives);
+        }
+
+
 
         // GET: Initiatives/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -133,6 +144,28 @@ namespace volunteerplatform.Controllers
             _context.Initiatives.Remove(initiative);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Initiatives/Finish/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Organizer,Admin")]
+        public async Task<IActionResult> Finish(int id)
+        {
+            var initiative = await _context.Initiatives.FindAsync(id);
+            if (initiative == null) return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+            if (initiative.OrganizerId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            initiative.Status = MissionStatus.Finished;
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Mission marked as finished! Volunteers can now download their certificates.";
+            return RedirectToAction("Manage", "Enrolments", new { id = id });
         }
     }
 }

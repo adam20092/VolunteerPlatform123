@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using volunteerplatform.Data;
 using volunteerplatform.Models;
 using volunteerplatform.Models.ViewModels;
@@ -11,15 +12,36 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly ApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
         _context = context;
+        _userManager = userManager;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        var user = await _userManager.GetUserAsync(User);
+        if (user != null && User.IsInRole("Volunteer") && !string.IsNullOrEmpty(user.Skills))
+        {
+            var userSkills = user.Skills.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            
+            var recommended = await _context.Initiatives
+                .Include(i => i.Organizer)
+                .Where(i => i.Status == MissionStatus.Active)
+                .ToListAsync();
+
+            var filtered = recommended
+                .Where(i => !string.IsNullOrEmpty(i.RequiredSkills) && 
+                            userSkills.Any(s => i.RequiredSkills.Contains(s, StringComparison.OrdinalIgnoreCase)))
+                .Take(3)
+                .ToList();
+
+            ViewBag.Recommended = filtered;
+        }
+
         return View();
     }
 

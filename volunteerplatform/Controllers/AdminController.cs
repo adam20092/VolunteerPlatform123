@@ -46,6 +46,6 @@ namespace volunteerplatform.Controllers
         public int TotalOrganizers { get; set; }
         public int TotalMission { get; set; }
         public int CompletedMissions { get; set; }
-        public List<ApplicationUser> RecentUsers { get; set; }
+        public List<ApplicationUser> RecentUsers { get; set; } = new List<ApplicationUser>();
     }
 }

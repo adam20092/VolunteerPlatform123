@@ -30,6 +30,39 @@
     </div>
 </section>
 
+@if (ViewBag.Recommended != null)
+{
+    var recs = ViewBag.Recommended as List<volunteerplatform.Models.Initiative>;
+    if (recs != null && recs.Any())
+    {
+        <div class="container mt-n5 position-relative" style="z-index: 10;">
+            <div class="bg-white shadow-lg rounded-4 p-4 border-top border-5 border-primary">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold mb-0 text-secondary"><i class="bi bi-magic text-primary me-2"></i>Smart Match: Recommended for You</h3>
+                    <a asp-controller="Initiatives" asp-action="Index" class="btn btn-sm btn-outline-primary rounded-pill px-4">See All Missions</a>
+                </div>
+                <div class="row">
+                    @foreach (var item in recs)
+                    {
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="card h-100 border-0 bg-light p-3 rounded-4 hover-lift">
+                                <div class="badge bg-primary rounded-pill mb-3 py-2 px-3 align-self-start small">
+                                    <i class="bi bi-star-fill me-1"></i> Matches your skills
+                                </div>
+                                <h5 class="fw-bold mb-2">@item.Title</h5>
+                                <p class="text-muted small mb-3">@item.Location</p>
+                                <div class="mt-auto">
+                                    <a asp-controller="Initiatives" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary w-100 rounded-pill btn-sm shadow-sm py-2 fw-bold">View Mission</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+
 <!-- How It Works Section -->
 <div class="container my-5 py-5" id="how-it-works">
     <div class="row text-center mb-5">

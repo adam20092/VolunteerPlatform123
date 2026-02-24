@@ -1,0 +1,73 @@
+@model IEnumerable<volunteerplatform.Models.Initiative>
+@{
+    ViewData["Title"] = "Mission Map Discovery";
+}
+
+<div class="container-fluid p-0" style="margin-top: -24px;">
+    <div id="discovery-map" style="height: calc(100vh - 56px); width: 100%;"></div>
+    
+    <!-- Floating Legend/Info -->
+    <div class="position-absolute translate-middle-y start-0 ms-4 bg-white p-4 shadow-lg rounded-4 d-none d-md-block" style="top: 50%; z-index: 1000; width: 300px; max-height: 80vh; overflow-y: auto;">
+        <h4 class="fw-bold mb-3">Discover Missions</h4>
+        <p class="text-muted small">Explore volunteering opportunities across the map. Click a marker to see more details.</p>
+        <hr/>
+        <div id="mission-list-sidebar">
+            @foreach(var item in Model) {
+                <div class="mb-3 p-2 hover-bg-light rounded-3 cursor-pointer" onclick="focusOnMission(@item.Latitude, @item.Longitude)">
+                    <h6 class="fw-bold mb-1">@item.Title</h6>
+                    <small class="text-primary"><i class="bi bi-geo-alt me-1"></i> @item.Location</small>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+    .hover-bg-light:hover { background-color: #f8f9fa; transition: 0.2s; }
+    .cursor-pointer { cursor: pointer; }
+    .leaflet-popup-content-wrapper { border-radius: 12px; padding: 5px; }
+    .leaflet-popup-tip { display: none; }
+</style>
+
+<script>
+    var map;
+    document.addEventListener('DOMContentLoaded', function() {
+        // Default view: Center of Bulgaria (approximately)
+        map = L.map('discovery-map').setView([42.7, 25.3], 7);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        var markers = [];
+        @foreach (var item in Model)
+        {
+            <text>
+            var marker = L.marker([@item.Latitude, @item.Longitude]).addTo(map);
+            var popupContent = `
+                <div class="p-2">
+                    <h6 class="fw-bold mb-1">@item.Title</h6>
+                    <p class="text-muted small mb-2">@item.Location</p>
+                    <a href="/Initiatives/Details/@item.Id" class="btn btn-primary btn-sm rounded-pill w-100">View Details</a>
+                </div>
+            `;
+            marker.bindPopup(popupContent);
+            markers.push(marker);
+            </text>
+        }
+
+        if (markers.length > 0) {
+            var group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+    });
+
+    function focusOnMission(lat, lng) {
+        map.setView([lat, lng], 14, { animate: true, duration: 1 });
+    }
+</script>
