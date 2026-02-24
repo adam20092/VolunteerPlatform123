@@ -1,20 +1,19 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using volunteerplatform.Data;
 using volunteerplatform.Models;
+using volunteerplatform.Services;
 
 namespace volunteerplatform.Controllers
 {
     public class InitiativesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IInitiativeService _initiativeService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public InitiativesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public InitiativesController(IInitiativeService initiativeService, UserManager<ApplicationUser> userManager)
         {
-            _context = context;
+            _initiativeService = initiativeService;
             _userManager = userManager;
         }
 
@@ -22,48 +21,24 @@ namespace volunteerplatform.Controllers
         public async Task<IActionResult> Index(string searchString)
         {
             ViewData["CurrentFilter"] = searchString;
-
-            var initiatives = from i in _context.Initiatives.Include(i => i.Organizer)
-                             select i;
-
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                initiatives = initiatives.Where(s => s.Title.Contains(searchString) 
-                                               || s.Location.Contains(searchString)
-                                               || s.Description.Contains(searchString));
-            }
-
-            return View(await initiatives.ToListAsync());
-        }
-        // GET: Initiatives/Map
-        public async Task<IActionResult> Map()
-        {
-            var initiatives = await _context.Initiatives
-                .Where(i => i.Status == MissionStatus.Active && i.Latitude != null && i.Longitude != null)
-                .ToListAsync();
-
+            var initiatives = await _initiativeService.GetAllInitiativesAsync(searchString);
             return View(initiatives);
         }
 
-
+        // GET: Initiatives/Map
+        public async Task<IActionResult> Map()
+        {
+            var initiatives = await _initiativeService.GetActiveInitiativesWithLocationAsync();
+            return View(initiatives);
+        }
 
         // GET: Initiatives/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var initiative = await _context.Initiatives
-                .Include(i => i.Organizer)
-                .Include(i => i.Enrolments).ThenInclude(e => e.Volunteer)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (initiative == null)
-            {
-                return NotFound();
-            }
+            var initiative = await _initiativeService.GetInitiativeByIdAsync(id.Value);
+            if (initiative == null) return NotFound();
 
             return View(initiative);
         }
@@ -84,11 +59,9 @@ namespace volunteerplatform.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);
-                initiative.OrganizerId = user.Id;
-                initiative.Status = MissionStatus.Active;
+                if (user == null) return Challenge();
 
-                _context.Add(initiative);
-                await _context.SaveChangesAsync();
+                await _initiativeService.CreateInitiativeAsync(initiative, user.Id);
                 return RedirectToAction(nameof(Index));
             }
             return View(initiative);
@@ -99,9 +72,9 @@ namespace volunteerplatform.Controllers
         public async Task<IActionResult> MyInitiatives()
         {
             var user = await _userManager.GetUserAsync(User);
-            var myInitiatives = await _context.Initiatives
-                .Where(i => i.OrganizerId == user.Id)
-                .ToListAsync();
+            if (user == null) return Challenge();
+
+            var myInitiatives = await _initiativeService.GetInitiativesByOrganizerAsync(user.Id);
             return View("Index", myInitiatives);
         }
 
@@ -111,13 +84,12 @@ namespace volunteerplatform.Controllers
         {
             if (id == null) return NotFound();
 
-            var initiative = await _context.Initiatives
-                .Include(i => i.Organizer)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
+            var initiative = await _initiativeService.GetInitiativeByIdAsync(id.Value);
             if (initiative == null) return NotFound();
 
             var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
             if (initiative.OrganizerId != user.Id && !User.IsInRole("Admin"))
             {
                 return Forbid();
@@ -132,17 +104,12 @@ namespace volunteerplatform.Controllers
         [Authorize(Roles = "Organizer,Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var initiative = await _context.Initiatives.FindAsync(id);
-            if (initiative == null) return NotFound();
-
             var user = await _userManager.GetUserAsync(User);
-            if (initiative.OrganizerId != user.Id && !User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
+            if (user == null) return Challenge();
 
-            _context.Initiatives.Remove(initiative);
-            await _context.SaveChangesAsync();
+            var result = await _initiativeService.DeleteInitiativeAsync(id, user.Id, User.IsInRole("Admin"));
+            if (!result) return NotFound();
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -152,17 +119,11 @@ namespace volunteerplatform.Controllers
         [Authorize(Roles = "Organizer,Admin")]
         public async Task<IActionResult> Finish(int id)
         {
-            var initiative = await _context.Initiatives.FindAsync(id);
-            if (initiative == null) return NotFound();
-
             var user = await _userManager.GetUserAsync(User);
-            if (initiative.OrganizerId != user.Id && !User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
+            if (user == null) return Challenge();
 
-            initiative.Status = MissionStatus.Finished;
-            await _context.SaveChangesAsync();
+            var result = await _initiativeService.FinishInitiativeAsync(id, user.Id, User.IsInRole("Admin"));
+            if (!result) return NotFound();
 
             TempData["Success"] = "Mission marked as finished! Volunteers can now download their certificates.";
             return RedirectToAction("Manage", "Enrolments", new { id = id });

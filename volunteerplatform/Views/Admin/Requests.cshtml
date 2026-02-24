@@ -1,0 +1,91 @@
+@model IEnumerable<volunteerplatform.Models.Enrolment>
+
+@{
+    ViewData["Title"] = "Manage Volunteer Requests";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6 fw-bold">Volunteer Requests</h1>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <p class="text-muted text-center py-4">No volunteer requests found.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Volunteer</th>
+                                <th>Mission</th>
+                                <th>Applied On</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var request in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold">@request.Volunteer.FullName</div>
+                                        <small class="text-muted">@request.Volunteer.Email</small>
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Initiatives" asp-action="Details" asp-route-id="@request.InitiativeId" class="text-decoration-none">
+                                            @request.Initiative.Title
+                                        </a>
+                                    </td>
+                                    <td>@request.AppliedOn.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        @if (request.Status == EnrolmentStatus.Pending)
+                                        {
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        }
+                                        else if (request.Status == EnrolmentStatus.Approved)
+                                        {
+                                            <span class="badge bg-success">Approved</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Rejected</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        @if (request.Status == EnrolmentStatus.Pending)
+                                        {
+                                            <form asp-controller="Enrolments" asp-action="UpdateStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@request.Id" />
+                                                <input type="hidden" name="status" value="@EnrolmentStatus.Approved" />
+                                                <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                            </form>
+                                            <form asp-controller="Enrolments" asp-action="UpdateStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@request.Id" />
+                                                <input type="hidden" name="status" value="@EnrolmentStatus.Rejected" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-controller="Enrolments" asp-action="UpdateStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@request.Id" />
+                                                <input type="hidden" name="status" value="@EnrolmentStatus.Pending" />
+                                                <button type="submit" class="btn btn-sm btn-link text-muted">Reset</button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

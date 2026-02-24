@@ -11,7 +11,7 @@
         <div class="col-md-3">
             <div class="card text-white bg-primary mb-3 shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Volunteers</h5>
+                    <h5 class="card-title"><i class="bi bi-people-fill me-2"></i>Volunteers</h5>
                     <p class="card-text display-4">@Model.TotalVolunteers</p>
                 </div>
             </div>
@@ -19,7 +19,7 @@
         <div class="col-md-3">
             <div class="card text-white bg-success mb-3 shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Organizers</h5>
+                    <h5 class="card-title"><i class="bi bi-building me-2"></i>Organizers</h5>
                     <p class="card-text display-4">@Model.TotalOrganizers</p>
                 </div>
             </div>
@@ -27,7 +27,7 @@
         <div class="col-md-3">
             <div class="card text-white bg-info mb-3 shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Missions</h5>
+                    <h5 class="card-title"><i class="bi bi-flag-fill me-2"></i>Missions</h5>
                     <p class="card-text display-4">@Model.TotalMission</p>
                 </div>
             </div>
@@ -35,18 +35,37 @@
         <div class="col-md-3">
             <div class="card text-white bg-warning mb-3 shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title text-dark">Completed</h5>
+                    <h5 class="card-title text-dark"><i class="bi bi-check-circle-fill me-2"></i>Completed</h5>
                     <p class="card-text display-4 text-dark">@Model.CompletedMissions</p>
                 </div>
             </div>
         </div>
     </div>
 
+    @* Pending Requests Alert *@
+    @if (Model.PendingRequests > 0)
+    {
+        <div class="alert alert-warning d-flex align-items-center justify-content-between mb-4" role="alert">
+            <div>
+                <i class="bi bi-clock-fill me-2"></i>
+                <strong>@Model.PendingRequests</strong> volunteer request(s) are waiting for review.
+            </div>
+            <a asp-action="Requests" class="btn btn-warning btn-sm">Review Now</a>
+        </div>
+    }
+
     <div class="row">
         <div class="col-md-12">
             <div class="card shadow-sm">
-                <div class="card-header bg-white fw-bold">
-                    User Management
+                <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-people me-2"></i>Recent Users</span>
+                    <a asp-action="Requests" class="btn btn-primary btn-sm">
+                        <i class="bi bi-clipboard-check me-1"></i>Manage Volunteer Requests
+                        @if (Model.PendingRequests > 0)
+                        {
+                            <span class="badge bg-danger ms-1">@Model.PendingRequests</span>
+                        }
+                    </a>
                 </div>
                 <div class="card-body">
                      <table class="table table-hover">
@@ -63,7 +82,7 @@
                                 <tr>
                                     <td>@user.Email</td>
                                     <td>@user.FullName</td>
-                                    <td>@user.Id</td>
+                                    <td><small class="text-muted">@user.Id</small></td>
                                 </tr>
                             }
                         </tbody>

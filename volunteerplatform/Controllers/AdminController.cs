@@ -27,6 +27,7 @@ namespace volunteerplatform.Controllers
                 TotalOrganizers = await _userManager.GetUsersInRoleAsync("Organizer").ContinueWith(t => t.Result.Count),
                 TotalMission = await _context.Initiatives.CountAsync(),
                 CompletedMissions = await _context.Initiatives.CountAsync(i => i.Status == MissionStatus.Finished),
+                PendingRequests = await _context.Enrolments.CountAsync(e => e.Status == EnrolmentStatus.Pending),
                 RecentUsers = await _userManager.Users.OrderByDescending(u => u.Id).Take(5).ToListAsync()
             };
 
@@ -38,6 +39,17 @@ namespace volunteerplatform.Controllers
             var users = await _userManager.Users.ToListAsync();
             return View(users);
         }
+
+        public async Task<IActionResult> Requests()
+        {
+            var requests = await _context.Enrolments
+                .Include(e => e.Initiative)
+                .Include(e => e.Volunteer)
+                .OrderByDescending(e => e.AppliedOn)
+                .ToListAsync();
+
+            return View(requests);
+        }
     }
 
     public class AdminDashboardViewModel
@@ -46,6 +58,7 @@ namespace volunteerplatform.Controllers
         public int TotalOrganizers { get; set; }
         public int TotalMission { get; set; }
         public int CompletedMissions { get; set; }
+        public int PendingRequests { get; set; }
         public List<ApplicationUser> RecentUsers { get; set; } = new List<ApplicationUser>();
     }
 }
