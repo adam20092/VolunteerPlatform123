@@ -1,19 +1,16 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using volunteerplatform.Models;
 using volunteerplatform.Models.ViewModels;
+using volunteerplatform.Services;
 
 namespace volunteerplatform.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IAccountService _accountService;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(IAccountService accountService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _accountService = accountService;
         }
 
         [HttpGet]
@@ -25,31 +22,18 @@ namespace volunteerplatform.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+
+            var (result, _) = await _accountService.RegisterAsync(model);
+
+            if (result.Succeeded)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FullName = model.FullName };
-                var result = await _userManager.CreateAsync(user, model.Password);
+                return RedirectToAction("Index", "Home");
+            }
 
-                if (result.Succeeded)
-                {
-                    // Assign Role
-                    if (!string.IsNullOrEmpty(model.Role) && (model.Role == "Organizer" || model.Role == "Volunteer"))
-                    {
-                        await _userManager.AddToRoleAsync(user, model.Role);
-                    }
-                    else
-                    {
-                        await _userManager.AddToRoleAsync(user, "Volunteer");
-                    }
-
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
             }
 
             return View(model);
@@ -64,25 +48,23 @@ namespace volunteerplatform.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+
+            var result = await _accountService.LoginAsync(model.Email, model.Password, model.RememberMe);
+
+            if (result.Succeeded)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return RedirectToAction("Index", "Home");
             }
 
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            await _accountService.LogoutAsync();
             return RedirectToAction("Index", "Home");
         }
     }

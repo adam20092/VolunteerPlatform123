@@ -16,6 +16,13 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IInitiativeService, InitiativeService>();
+builder.Services.AddScoped<IEnrolmentService, EnrolmentService>();
+builder.Services.AddScoped<IFundingService, FundingService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+builder.Services.AddScoped<IRatingService, RatingService>();
 
 builder.Services.AddControllersWithViews();
 

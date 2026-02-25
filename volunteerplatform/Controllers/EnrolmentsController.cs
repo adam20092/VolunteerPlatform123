@@ -1,21 +1,20 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using volunteerplatform.Data;
 using volunteerplatform.Models;
+using volunteerplatform.Services;
 
 namespace volunteerplatform.Controllers
 {
     [Authorize]
     public class EnrolmentsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IEnrolmentService _enrolmentService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public EnrolmentsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public EnrolmentsController(IEnrolmentService enrolmentService, UserManager<ApplicationUser> userManager)
         {
-            _context = context;
+            _enrolmentService = enrolmentService;
             _userManager = userManager;
         }
 
@@ -26,29 +25,19 @@ namespace volunteerplatform.Controllers
         public async Task<IActionResult> Apply(int id)
         {
             var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
             
-            // Check if already enrolled
-            var exists = await _context.Enrolments
-                .AnyAsync(e => e.InitiativeId == id && e.VolunteerId == user.Id);
+            var success = await _enrolmentService.ApplyAsync(id, user.Id);
 
-            if (exists)
+            if (!success)
             {
                 TempData["Message"] = "You have already applied for this mission.";
-                return RedirectToAction("Details", "Initiatives", new { id = id });
+            }
+            else
+            {
+                TempData["Success"] = "Application submitted successfully!";
             }
 
-            var enrolment = new Enrolment
-            {
-                InitiativeId = id,
-                VolunteerId = user.Id,
-                Status = EnrolmentStatus.Pending,
-                AppliedOn = DateTime.Now
-            };
-
-            _context.Enrolments.Add(enrolment);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Application submitted successfully!";
             return RedirectToAction("Details", "Initiatives", new { id = id });
         }
 
@@ -57,12 +46,9 @@ namespace volunteerplatform.Controllers
         public async Task<IActionResult> MyApplications()
         {
             var user = await _userManager.GetUserAsync(User);
-            var applications = await _context.Enrolments
-                .Include(e => e.Initiative)
-                .Where(e => e.VolunteerId == user.Id)
-                .OrderByDescending(e => e.AppliedOn)
-                .ToListAsync();
+            if (user == null) return Challenge();
 
+            var applications = await _enrolmentService.GetEnrolmentsByVolunteerAsync(user.Id);
             return View(applications);
         }
 
@@ -70,14 +56,12 @@ namespace volunteerplatform.Controllers
         [Authorize(Roles = "Organizer,Admin")]
         public async Task<IActionResult> Manage(int id)
         {
-            var initiative = await _context.Initiatives
-                .Include(i => i.Enrolments).ThenInclude(e => e.Volunteer)
-                .FirstOrDefaultAsync(i => i.Id == id);
-
+            var initiative = await _enrolmentService.GetInitiativeWithEnrolmentsAsync(id);
             if (initiative == null) return NotFound();
 
-            // Security check: Only owner or admin can manage
             var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
             if (initiative.OrganizerId != user.Id && !User.IsInRole("Admin"))
             {
                 return Forbid();
@@ -91,11 +75,10 @@ namespace volunteerplatform.Controllers
         [Authorize(Roles = "Organizer,Admin")]
         public async Task<IActionResult> UpdateStatus(int id, EnrolmentStatus status)
         {
-            var enrolment = await _context.Enrolments.FindAsync(id);
+            var enrolment = await _enrolmentService.GetEnrolmentByIdAsync(id);
             if (enrolment == null) return NotFound();
 
-            enrolment.Status = status;
-            await _context.SaveChangesAsync();
+            await _enrolmentService.UpdateStatusAsync(id, status);
 
             return RedirectToAction("Manage", new { id = enrolment.InitiativeId });
         }
@@ -103,26 +86,18 @@ namespace volunteerplatform.Controllers
         // GET: Enrolments/Certificate/5
         public async Task<IActionResult> Certificate(int id)
         {
-            var enrolment = await _context.Enrolments
-                .Include(e => e.Initiative).ThenInclude(i => i.Organizer)
-                .Include(e => e.Volunteer)
-                .FirstOrDefaultAsync(e => e.Id == id);
-
+            var enrolment = await _enrolmentService.GetEnrolmentByIdAsync(id);
             if (enrolment == null) return NotFound();
 
-            // Security check: Only the volunteer or an admin can see the certificate
             var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
             if (enrolment.VolunteerId != user.Id && !User.IsInRole("Admin"))
             {
                 return Forbid();
             }
 
-            // Ensure certificate code exists
-            if (string.IsNullOrEmpty(enrolment.CertificateCode))
-            {
-                enrolment.CertificateCode = "VP-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
-                await _context.SaveChangesAsync();
-            }
+            await _enrolmentService.EnsureCertificateCodeAsync(id);
 
             return View(enrolment);
         }

@@ -1,20 +1,20 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using volunteerplatform.Data;
 using volunteerplatform.Models;
+using volunteerplatform.Services;
 
 namespace volunteerplatform.Controllers
 {
     [Authorize]
     public class RatingsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRatingService _ratingService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public RatingsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public RatingsController(IRatingService ratingService, UserManager<ApplicationUser> userManager)
         {
-            _context = context;
+            _ratingService = ratingService;
             _userManager = userManager;
         }
 
@@ -32,17 +32,16 @@ namespace volunteerplatform.Controllers
         [HttpPost]
         public async Task<IActionResult> Rate(Rating rating)
         {
-            if (rating.Score < 1 || rating.Score > 5)
-            {
-                 ModelState.AddModelError("", "Score must be between 1 and 5");
-                 return View(rating);
-            }
-
             var user = await _userManager.GetUserAsync(User);
-            rating.OrganizerId = user.Id;
+            if (user == null) return Challenge();
 
-            _context.Ratings.Add(rating);
-            await _context.SaveChangesAsync();
+            var success = await _ratingService.SubmitRatingAsync(rating, user.Id);
+
+            if (!success)
+            {
+                ModelState.AddModelError("", "Score must be between 1 and 5");
+                return View(rating);
+            }
 
             return RedirectToAction("Manage", "Enrolments", new { id = rating.InitiativeId });
         }

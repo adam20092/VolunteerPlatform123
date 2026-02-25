@@ -1,29 +1,26 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using volunteerplatform.Data;
 using volunteerplatform.Models;
+using volunteerplatform.Services;
 
 namespace volunteerplatform.Controllers
 {
     public class FundingController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IFundingService _fundingService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public FundingController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public FundingController(IFundingService fundingService, UserManager<ApplicationUser> userManager)
         {
-            _context = context;
+            _fundingService = fundingService;
             _userManager = userManager;
         }
 
         [HttpGet]
         public async Task<IActionResult> Donate(int id)
         {
-            var initiative = await _context.Initiatives
-                .Include(i => i.Organizer)
-                .FirstOrDefaultAsync(i => i.Id == id);
+            var initiative = await _fundingService.GetInitiativeForDonationAsync(id);
 
             if (initiative == null) return NotFound();
 
@@ -41,39 +38,24 @@ namespace volunteerplatform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProcessDonation(Donation donation)
         {
-            var initiative = await _context.Initiatives.FindAsync(donation.InitiativeId);
-            if (initiative == null) return NotFound();
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var user = await _userManager.GetUserAsync(User);
-                if (user != null)
-                {
-                    donation.DonorId = user.Id;
-                }
-
-                donation.DonatedOn = DateTime.Now;
-
-                // Simulate processing
-                _context.Donations.Add(donation);
-                
-                initiative.CurrentAmount += donation.Amount;
-                
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Success), new { id = donation.Id });
+                var initiative = await _fundingService.GetInitiativeForDonationAsync(donation.InitiativeId);
+                ViewBag.Initiative = initiative;
+                return View("Donate", donation);
             }
 
-            ViewBag.Initiative = initiative;
-            return View("Donate", donation);
+            var user = await _userManager.GetUserAsync(User);
+            var donationId = await _fundingService.ProcessDonationAsync(donation, user?.Id);
+
+            if (donationId == 0) return NotFound();
+
+            return RedirectToAction(nameof(Success), new { id = donationId });
         }
 
         public async Task<IActionResult> Success(int id)
         {
-            var donation = await _context.Donations
-                .Include(d => d.Initiative)
-                .FirstOrDefaultAsync(d => d.Id == id);
-
+            var donation = await _fundingService.GetDonationDetailsAsync(id);
             if (donation == null) return NotFound();
 
             return View(donation);

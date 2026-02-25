@@ -1,74 +1,43 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using volunteerplatform.Data;
 using volunteerplatform.Models;
 using volunteerplatform.Models.ViewModels;
+using volunteerplatform.Services;
 
 namespace volunteerplatform.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly ApplicationDbContext _context;
+    private readonly IStatisticsService _statisticsService;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public HomeController(ILogger<HomeController> logger, IStatisticsService statisticsService, UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
-        _context = context;
+        _statisticsService = statisticsService;
         _userManager = userManager;
     }
 
     public async Task<IActionResult> Index()
     {
         var user = await _userManager.GetUserAsync(User);
-        if (user != null && User.IsInRole("Volunteer") && !string.IsNullOrEmpty(user.Skills))
+        if (user != null && User.IsInRole("Volunteer"))
         {
-            var userSkills = user.Skills.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            
-            var recommended = await _context.Initiatives
-                .Include(i => i.Organizer)
-                .Where(i => i.Status == MissionStatus.Active)
-                .ToListAsync();
-
-            var filtered = recommended
-                .Where(i => !string.IsNullOrEmpty(i.RequiredSkills) && 
-                            userSkills.Any(s => i.RequiredSkills.Contains(s, StringComparison.OrdinalIgnoreCase)))
-                .Take(3)
-                .ToList();
-
-            ViewBag.Recommended = filtered;
+            var recommended = await _statisticsService.GetRecommendedInitiativesAsync(user.Id);
+            ViewBag.Recommended = recommended;
         }
+
+        var stats = await _statisticsService.GetHomeStatsAsync();
+        ViewBag.Stats = stats;
 
         return View();
     }
 
     public async Task<IActionResult> Leaderboard()
     {
-        var volunteers = await _context.Users
-            .Where(u => _context.UserRoles.Any(ur => ur.UserId == u.Id && _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == "Volunteer")))
-            .Select(u => new VolunteerStats
-            {
-                FullName = u.FullName ?? u.UserName,
-                CompletedMissions = _context.Enrolments.Count(e => e.VolunteerId == u.Id && e.Status == EnrolmentStatus.Approved),
-                TotalPoints = (_context.Enrolments.Count(e => e.VolunteerId == u.Id && e.Status == EnrolmentStatus.Approved) * 100) + (u.Rating * 10)
-            })
-            .OrderByDescending(v => v.TotalPoints)
-            .Take(10)
-            .ToListAsync();
-
-        int rank = 1;
-        foreach (var v in volunteers)
-        {
-            v.Rank = rank++;
-            if (v.TotalPoints >= 1000) { v.Badge = "Legend"; v.BadgeColor = "bg-warning text-dark"; }
-            else if (v.TotalPoints >= 500) { v.Badge = "Hero"; v.BadgeColor = "bg-primary"; }
-            else if (v.TotalPoints >= 100) { v.Badge = "Rising Star"; v.BadgeColor = "bg-success"; }
-            else { v.Badge = "Newbie"; v.BadgeColor = "bg-secondary"; }
-        }
-
+        var volunteers = await _statisticsService.GetLeaderboardAsync();
         var model = new LeaderboardViewModel { TopVolunteers = volunteers };
         return View(model);
     }

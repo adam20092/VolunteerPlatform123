@@ -148,20 +148,20 @@
     <div class="container">
         <div class="row text-center text-white">
             <div class="col-md-3 mb-4 mb-md-0">
-                <div class="display-4 fw-bold">50+</div>
+                <div class="display-4 fw-bold">@((ViewBag.Stats?.TotalInitiatives ?? 0))+</div>
                 <div>Initiatives</div>
             </div>
             <div class="col-md-3 mb-4 mb-md-0">
-                <div class="display-4 fw-bold">1200+</div>
+                <div class="display-4 fw-bold">@((ViewBag.Stats?.TotalVolunteers ?? 0))+</div>
                 <div>Volunteers</div>
             </div>
             <div class="col-md-3 mb-4 mb-md-0">
-                <div class="display-4 fw-bold">300</div>
+                <div class="display-4 fw-bold">@((ViewBag.Stats?.CompletedProjects ?? 0))</div>
                 <div>Projects Completed</div>
             </div>
              <div class="col-md-3">
-                <div class="display-4 fw-bold">10k+</div>
-                <div>Hours Donated</div>
+                <div class="display-4 fw-bold">@((ViewBag.Stats?.TotalDonationsCount ?? 0))</div>
+                <div>Donations Received</div>
             </div>
         </div>
     </div>

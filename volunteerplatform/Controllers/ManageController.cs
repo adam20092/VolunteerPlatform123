@@ -3,21 +3,22 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using volunteerplatform.Models;
 using volunteerplatform.Models.ViewModels;
+using volunteerplatform.Services;
 
 namespace volunteerplatform.Controllers
 {
     [Authorize]
     public class ManageController : Controller
     {
+        private readonly IUserProfileService _userProfileService;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public ManageController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            IUserProfileService userProfileService,
+            UserManager<ApplicationUser> userManager)
         {
+            _userProfileService = userProfileService;
             _userManager = userManager;
-            _signInManager = signInManager;
         }
 
         [TempData]
@@ -26,25 +27,13 @@ namespace volunteerplatform.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return NotFound();
 
-            var model = new IndexViewModel
-            {
-                Username = user.UserName,
-                FullName = user.FullName,
-                PhoneNumber = user.PhoneNumber,
-                Age = user.Age,
-                Skills = user.Skills,
-                Availability = user.Availability,
-                Location = user.Location,
-                OrganizationName = user.OrganizationName,
-                StatusMessage = StatusMessage
-            };
+            var model = await _userProfileService.GetProfileAsync(userId);
+            if (model == null) return NotFound($"Unable to load user with ID '{userId}'.");
 
+            model.StatusMessage = StatusMessage;
             return View(model);
         }
 
@@ -52,33 +41,18 @@ namespace volunteerplatform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(IndexViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            if (!ModelState.IsValid) return View(model);
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return NotFound();
 
-            user.FullName = model.FullName;
-            user.PhoneNumber = model.PhoneNumber;
-            user.Age = model.Age;
-            user.Skills = model.Skills;
-            user.Availability = model.Availability;
-            user.Location = model.Location;
-            user.OrganizationName = model.OrganizationName;
-
-            var updateResult = await _userManager.UpdateAsync(user);
-            if (!updateResult.Succeeded)
+            var result = await _userProfileService.UpdateProfileAsync(userId, model);
+            if (!result.Succeeded)
             {
                 StatusMessage = "Error: Unexpected error when trying to update profile.";
                 return RedirectToAction(nameof(Index));
             }
 
-            await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToAction(nameof(Index));
         }
@@ -93,30 +67,22 @@ namespace volunteerplatform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            if (!ModelState.IsValid) return View(model);
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return NotFound();
 
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-            if (!changePasswordResult.Succeeded)
+            var result = await _userProfileService.ChangePasswordAsync(userId, model.OldPassword, model.NewPassword);
+            if (!result.Succeeded)
             {
-                foreach (var error in changePasswordResult.Errors)
+                foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
                 return View(model);
             }
 
-            await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your password has been changed.";
-
             return RedirectToAction(nameof(ChangePassword));
         }
     }
