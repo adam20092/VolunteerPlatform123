@@ -13,6 +13,41 @@
     </div>
 
     <div class="row justify-content-center">
+        <!-- New Reward Highlight Card -->
+        @if (Model.TopVolunteers.Any())
+        {
+            var top = Model.TopVolunteers.First();
+            <div class="col-lg-10 mb-5">
+                <div class="card overflow-hidden border-0 shadow-lg rounded-4 text-white" style="background: linear-gradient(135deg, #FFD700, #DAB200);">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-md-4 text-center p-4">
+                            <div class="reward-medal-container position-relative">
+                                <span class="display-1">🏆</span>
+                                <div class="confetti-effect"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-8 p-4">
+                            <div class="badge bg-white text-warning mb-2 px-3 py-2 rounded-pill fw-bold">CURRENT CHAMPION</div>
+                            <h2 class="display-6 fw-bold mb-1">@top.FullName</h2>
+                            <p class="h5 opacity-75 mb-4">You have earned the <strong>Volunteer Excellence Award</strong> for this week!</p>
+                            
+                            <div class="reward-box bg-white bg-opacity-25 rounded-3 p-3 border border-white border-opacity-50">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <i class="bi bi-gift-fill h2 mb-0"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h5 class="mb-0">Your Reward:</h5>
+                                        <p class="mb-0 small">"The Volunteer Key" - Grants access to exclusive community events and a 20% discount on partner charity merchandise.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
         <div class="col-lg-10">
             <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
                 <div class="card-header bg-dark text-white py-3">
@@ -26,7 +61,7 @@
                 <div class="list-group list-group-flush">
                     @foreach (var v in Model.TopVolunteers)
                     {
-                        <div class="list-group-item list-group-item-action py-4 border-bottom @(v.Rank <= 3 ? "bg-light" : "")">
+                        <div class="list-group-item list-group-item-action py-4 border-bottom @(v.Rank == 1 ? "rank-gold" : v.Rank == 2 ? "rank-silver" : v.Rank == 3 ? "rank-bronze" : "")">
                             <div class="row align-items-center">
                                 <div class="col-2 text-center">
                                     @if (v.Rank == 1)
@@ -48,12 +83,16 @@
                                 </div>
                                 <div class="col-5">
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar-circle me-3">
+                                        <div class="avatar-circle me-3 @(v.Rank == 1 ? "bg-warning border-gold" : "")">
                                             @v.FullName.Substring(0, 1).ToUpper()
                                         </div>
                                         <div>
                                             <h5 class="mb-0 fw-bold">@v.FullName</h5>
                                             <span class="badge @v.BadgeColor rounded-pill small">@v.Badge</span>
+                                            @if (v.Rank == 1)
+                                            {
+                                                <span class="badge bg-warning text-dark rounded-pill small ms-1 animate-pulse"><i class="bi bi-award-fill"></i> REWARDED</span>
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -95,9 +134,14 @@
         font-weight: bold;
         font-size: 1.2rem;
     }
+
+    .border-gold {
+        border: 3px solid #FFF;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
     
     .list-group-item {
-        transition: transform 0.2s ease;
+        transition: all 0.2s ease;
     }
     
     .list-group-item:hover {
@@ -105,4 +149,28 @@
         z-index: 10;
         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
+
+    .rank-gold { background: linear-gradient(to right, rgba(255, 215, 0, 0.05), transparent); border-left: 5px solid #FFD700; }
+    .rank-silver { background: linear-gradient(to right, rgba(192, 192, 192, 0.05), transparent); border-left: 5px solid #C0C0C0; }
+    .rank-bronze { background: linear-gradient(to right, rgba(205, 127, 50, 0.05), transparent); border-left: 5px solid #CD7F32; }
+
+    .animate-pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0% { opacity: 0.7; }
+        50% { opacity: 1; transform: scale(1.05); }
+        100% { opacity: 0.7; }
+    }
+
+    .reward-medal-container {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @@keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
 </style>
+

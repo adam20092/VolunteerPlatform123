@@ -141,7 +141,85 @@
             </div>
         </div>
     </div>
-</div>
+<!-- Community Champion Section -->
+@if (ViewBag.TopVolunteer != null)
+{
+    var top = ViewBag.TopVolunteer as volunteerplatform.Models.ViewModels.VolunteerStats;
+    <section class="container my-5 py-5 border-top">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="reward-highlight-card p-5 rounded-4 shadow-lg text-white" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="champion-trophy me-3">🏆</div>
+                        <div>
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fw-bold">REWARD SYSTEM ACTIVE</span>
+                            <h2 class="display-5 fw-bold mb-0">Champion's Reward</h2>
+                        </div>
+                    </div>
+                    <p class="lead mb-4">Be the #1 on our leaderboard at the end of the week to earn the <strong>exclusive Volunteer Key</strong>.</p>
+                    <div class="reward-perks p-3 bg-white bg-opacity-10 rounded-3 mb-4">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="bi bi-patch-check-fill text-warning me-2"></i> Access to VIP community gatherings.</li>
+                            <li class="mb-2"><i class="bi bi-patch-check-fill text-warning me-2"></i> 20% discount at partner stores.</li>
+                            <li><i class="bi bi-patch-check-fill text-warning me-2"></i> Featured spotlight on our social media.</li>
+                        </ul>
+                    </div>
+                    <a asp-controller="Home" asp-action="Leaderboard" class="btn btn-light btn-lg rounded-pill px-4 fw-bold">View Leaderboard</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <div class="champion-avatar-large mx-auto mb-4">
+                        @top.FullName.Substring(0, 1).ToUpper()
+                    </div>
+                    <h3 class="fw-bold display-6 mb-1">@top.FullName</h3>
+                    <p class="text-muted h4 mb-4">Current Champion: @top.TotalPoints pts</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge @top.BadgeColor rounded-pill p-2 px-3 fw-bold">@top.Badge</span>
+                        <span class="badge bg-warning text-dark rounded-pill p-2 px-3 fw-bold"><i class="bi bi-award-fill"></i> REWARDED</span>
+                    </div>
+                    <p class="mt-4 text-muted fst-italic">"Volunteering is not a choice, it's a responsibility."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<style>
+    .champion-trophy {
+        font-size: 3rem;
+        animation: rotate-trophy 5s infinite ease-in-out;
+    }
+
+    @@keyframes rotate-trophy {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1) rotate(5deg); }
+    }
+
+    .champion-avatar-large {
+        width: 150px;
+        height: 150px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        font-weight: 800;
+        box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        border: 10px solid white;
+        outline: 2px solid lightgray;
+    }
+
+    .reward-highlight-card {
+        transition: transform 0.3s ease;
+    }
+
+    .reward-highlight-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
 
 <!-- Stats Section -->
 <div class="bg-red py-5 mt-5">

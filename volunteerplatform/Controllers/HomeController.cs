@@ -32,6 +32,9 @@ public class HomeController : Controller
         var stats = await _statisticsService.GetHomeStatsAsync();
         ViewBag.Stats = stats;
 
+        var leaderboard = await _statisticsService.GetLeaderboardAsync(1);
+        ViewBag.TopVolunteer = leaderboard.FirstOrDefault();
+
         return View();
     }
 
