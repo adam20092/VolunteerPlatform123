@@ -44,7 +44,7 @@ namespace volunteerplatform.Controllers
         }
 
         // GET: Initiatives/Create
-        [Authorize(Roles = "Organizer,Admin")]
+        [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
         public IActionResult Create()
         {
             return View();
@@ -53,7 +53,7 @@ namespace volunteerplatform.Controllers
         // POST: Initiatives/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Organizer,Admin")]
+        [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,Location,Latitude,Longitude,DateAndTime,RequiredVolunteers,RequiredSkills")] Initiative initiative)
         {
             if (ModelState.IsValid)
@@ -79,7 +79,7 @@ namespace volunteerplatform.Controllers
         }
 
         // GET: Initiatives/Delete/5
-        [Authorize(Roles = "Organizer,Admin")]
+        [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -90,7 +90,7 @@ namespace volunteerplatform.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            if (initiative.OrganizerId != user.Id && !User.IsInRole("Admin"))
+            if (initiative.OrganizerId != user.Id && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin"))
             {
                 return Forbid();
             }
@@ -101,13 +101,13 @@ namespace volunteerplatform.Controllers
         // POST: Initiatives/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Organizer,Admin")]
+        [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            var result = await _initiativeService.DeleteInitiativeAsync(id, user.Id, User.IsInRole("Admin"));
+            var result = await _initiativeService.DeleteInitiativeAsync(id, user.Id, User.IsInRole("Admin") || User.IsInRole("SuperAdmin"));
             if (!result) return NotFound();
 
             return RedirectToAction(nameof(Index));
@@ -116,13 +116,13 @@ namespace volunteerplatform.Controllers
         // POST: Initiatives/Finish/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Organizer,Admin")]
+        [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
         public async Task<IActionResult> Finish(int id)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            var result = await _initiativeService.FinishInitiativeAsync(id, user.Id, User.IsInRole("Admin"));
+            var result = await _initiativeService.FinishInitiativeAsync(id, user.Id, User.IsInRole("Admin") || User.IsInRole("SuperAdmin"));
             if (!result) return NotFound();
 
             TempData["Success"] = "Mission marked as finished! Volunteers can now download their certificates.";

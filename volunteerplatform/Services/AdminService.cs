@@ -49,9 +49,9 @@ namespace volunteerplatform.Services
                 result.Add(new UserAdminViewModel { User = u, Roles = roles });
             }
 
-            // Sort: Admin first, then Organizer, then Volunteer
+            // Sort: SuperAdmin first, then Admin, then Organizer, then Volunteer
             return result
-                .OrderBy(x => x.RoleDisplay == "Admin" ? 0 : x.RoleDisplay == "Organizer" ? 1 : 2)
+                .OrderBy(x => x.RoleDisplay == "SuperAdmin" ? 0 : x.RoleDisplay == "Admin" ? 1 : x.RoleDisplay == "Organizer" ? 2 : 3)
                 .ThenBy(x => x.User.FullName)
                 .ToList();
         }

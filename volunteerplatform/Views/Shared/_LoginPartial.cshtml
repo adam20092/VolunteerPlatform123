@@ -11,7 +11,7 @@
             ACCOUNT
         </a>
     </li>
-    @if (User.IsInRole("Admin"))
+    @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
     {
         <li class="nav-item">
             <a class="nav-link text-danger fw-bold" asp-area="" asp-controller="Admin" asp-action="Index">ADMIN</a>

@@ -73,7 +73,7 @@ namespace volunteerplatform.Controllers
         }
 
         // GET: Enrolments/Manage/5 (For Organizers)
-        [Authorize(Roles = "Organizer,Admin")]
+        [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
         public async Task<IActionResult> Manage(int id)
         {
             var initiative = await _enrolmentService.GetInitiativeWithEnrolmentsAsync(id);
@@ -82,7 +82,7 @@ namespace volunteerplatform.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            if (initiative.OrganizerId != user.Id && !User.IsInRole("Admin"))
+            if (initiative.OrganizerId != user.Id && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin"))
             {
                 return Forbid();
             }
@@ -92,7 +92,7 @@ namespace volunteerplatform.Controllers
 
         // POST: Enrolments/UpdateStatus
         [HttpPost]
-        [Authorize(Roles = "Organizer,Admin")]
+        [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
         public async Task<IActionResult> UpdateStatus(int id, EnrolmentStatus status)
         {
             var enrolment = await _enrolmentService.GetEnrolmentByIdAsync(id);
@@ -105,7 +105,7 @@ namespace volunteerplatform.Controllers
 
         // POST: Enrolments/Remove/5
         [HttpPost]
-        [Authorize(Roles = "Organizer,Admin")]
+        [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove(int id, string? returnUrl = null)
         {
@@ -116,7 +116,7 @@ namespace volunteerplatform.Controllers
             if (user == null) return Challenge();
 
             // Check if user is Admin or the Organizer of the initiative
-            if (enrolment.Initiative.OrganizerId != user.Id && !User.IsInRole("Admin"))
+            if (enrolment.Initiative.OrganizerId != user.Id && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin"))
             {
                 return Forbid();
             }
@@ -143,7 +143,7 @@ namespace volunteerplatform.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            if (enrolment.VolunteerId != user.Id && !User.IsInRole("Admin"))
+            if (enrolment.VolunteerId != user.Id && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin"))
             {
                 return Forbid();
             }

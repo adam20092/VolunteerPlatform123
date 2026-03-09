@@ -4,7 +4,7 @@ using volunteerplatform.Services;
 
 namespace volunteerplatform.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;

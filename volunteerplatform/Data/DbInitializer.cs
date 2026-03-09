@@ -12,13 +12,22 @@ namespace volunteerplatform.Data
             RoleManager<IdentityRole> roleManager)
         {
             // ─── 1. ROLES ────────────────────────────────────────────────────────────
-            foreach (var role in new[] { "Admin", "Organizer", "Volunteer" })
+            foreach (var role in new[] { "SuperAdmin", "Admin", "Organizer", "Volunteer" })
             {
                 if (!await roleManager.RoleExistsAsync(role))
                     await roleManager.CreateAsync(new IdentityRole(role));
             }
 
             // ─── 2. USERS ────────────────────────────────────────────────────────────
+            var superAdmin = await EnsureUser(userManager, new ApplicationUser
+            {
+                UserName        = "superadmin@volunteer.com",
+                Email           = "superadmin@volunteer.com",
+                FullName        = "Main SuperAdmin",
+                EmailConfirmed  = true,
+                IsVerified      = true
+            }, "Super123!", "SuperAdmin");
+
             var admin = await EnsureUser(userManager, new ApplicationUser
             {
                 UserName        = "admin@volunteer.com",
