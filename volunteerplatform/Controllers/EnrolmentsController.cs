@@ -11,11 +11,16 @@ namespace volunteerplatform.Controllers
     {
         private readonly IEnrolmentService _enrolmentService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IInitiativeService _initiativeService;
 
-        public EnrolmentsController(IEnrolmentService enrolmentService, UserManager<ApplicationUser> userManager)
+        public EnrolmentsController(
+            IEnrolmentService enrolmentService, 
+            UserManager<ApplicationUser> userManager,
+            IInitiativeService initiativeService)
         {
             _enrolmentService = enrolmentService;
             _userManager = userManager;
+            _initiativeService = initiativeService;
         }
 
         // POST: Enrolments/Apply/5
@@ -26,6 +31,21 @@ namespace volunteerplatform.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
+
+            var initiative = await _initiativeService.GetInitiativeDetailsAsync(id);
+            if (initiative == null) return NotFound();
+
+            if (!string.IsNullOrEmpty(initiative.RequiredSkills))
+            {
+                var reqSkills = initiative.RequiredSkills.Split(',').Select(s => s.Trim()).ToList();
+                var userSkills = user.Skills?.Split(',').Select(s => s.Trim()).ToList() ?? new List<string>();
+
+                if (!reqSkills.Intersect(userSkills, StringComparer.OrdinalIgnoreCase).Any())
+                {
+                    TempData["Error"] = "Нямате нито едно от изискваните умения за тази мисия.";
+                    return RedirectToAction("Details", "Initiatives", new { id = id });
+                }
+            }
             
             var success = await _enrolmentService.ApplyAsync(id, user.Id);
 
