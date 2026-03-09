@@ -84,7 +84,7 @@
                         else
                         {
                             <strong>Your skills don't fully match this mission's requirements.</strong>
-                            <div class="small mt-1">Required: @string.Join(", ", requiredSkills) — but you can still apply!</div>
+                            <div class="small mt-1">Required: @string.Join(", ", requiredSkills) — you must match at least one to apply!</div>
                         }
                     </div>
                 </div>
@@ -145,6 +145,10 @@
                             @if(TempData["Message"] != null)
                             {
                                 <div class="alert alert-warning">@TempData["Message"]</div>
+                            }
+                            @if(TempData["Error"] != null)
+                            {
+                                <div class="alert alert-danger fw-bold"><i class="bi bi-x-circle-fill me-2"></i>@TempData["Error"]</div>
                             }
 
                              <form asp-controller="Enrolments" asp-action="Apply" asp-route-id="@Model.Id" method="post">
