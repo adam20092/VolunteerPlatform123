@@ -55,7 +55,7 @@ namespace volunteerplatform.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var result = await _accountService.LoginAsync(model.Email, model.Password, model.RememberMe);
+            var result = await _accountService.LoginAsync(model.Email!, model.Password!, model.RememberMe);
 
             if (result.Succeeded)
             {

@@ -32,7 +32,7 @@ namespace volunteerplatform.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            var initiative = await _initiativeService.GetInitiativeDetailsAsync(id);
+            var initiative = await _initiativeService.GetInitiativeByIdAsync(id);
             if (initiative == null) return NotFound();
 
             if (!string.IsNullOrEmpty(initiative.RequiredSkills))

@@ -383,7 +383,7 @@ namespace volunteerplatform.Data
             }
 
             // ─── 8. MASS SEEDING (Populate with many more) ──────────────────────────
-            if (!context.Users.Any(u => u.UserName.Contains("_extra")))
+            if (!context.Users.Any(u => u.UserName != null && u.UserName.Contains("_extra")))
             {
                 var random = new Random();
                 var cities = new[] { "Sofia", "Plovdiv", "Varna", "Burgas", "Ruse", "Stara Zagora", "Pleven", "Veliko Tarnovo" };

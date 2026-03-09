@@ -24,14 +24,14 @@ namespace volunteerplatform.Services
 
             return new IndexViewModel
             {
-                Username = user.UserName,
-                FullName = user.FullName,
-                PhoneNumber = user.PhoneNumber,
+                Username = user.UserName ?? string.Empty,
+                FullName = user.FullName ?? string.Empty,
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
                 Age = user.Age,
-                Skills = user.Skills,
-                Availability = user.Availability,
-                Location = user.Location,
-                OrganizationName = user.OrganizationName
+                Skills = user.Skills ?? string.Empty,
+                Availability = user.Availability ?? string.Empty,
+                Location = user.Location ?? string.Empty,
+                OrganizationName = user.OrganizationName ?? string.Empty
             };
         }
 

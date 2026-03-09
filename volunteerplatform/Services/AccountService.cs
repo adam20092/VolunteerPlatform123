@@ -27,7 +27,7 @@ namespace volunteerplatform.Services
                 Skills = model.Skills
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(user, model.Password!);
 
             if (result.Succeeded)
             {

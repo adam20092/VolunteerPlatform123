@@ -34,7 +34,7 @@ namespace volunteerplatform.Services
                 .Where(u => _context.UserRoles.Any(ur => ur.UserId == u.Id && _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == "Volunteer")))
                 .Select(u => new VolunteerStats
                 {
-                    FullName = u.FullName ?? u.UserName,
+                    FullName = u.FullName ?? u.UserName ?? string.Empty,
                     CompletedMissions = _context.Enrolments.Count(e => e.VolunteerId == u.Id && e.Status == EnrolmentStatus.Approved),
                     TotalPoints = (_context.Enrolments.Count(e => e.VolunteerId == u.Id && e.Status == EnrolmentStatus.Approved) * 100) + (u.Rating * 10)
                 })

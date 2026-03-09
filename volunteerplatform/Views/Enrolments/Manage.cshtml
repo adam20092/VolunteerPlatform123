@@ -48,7 +48,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Enrolments.OrderByDescending(e => e.AppliedOn))
+                    @foreach (var item in Model.Enrolments?.OrderByDescending(e => e.AppliedOn) ?? Enumerable.Empty<Enrolment>())
                     {
                         <tr>
                             <td class="ps-4">
@@ -93,7 +93,7 @@
                             </td>
                         </tr>
                     }
-                    @if (!Model.Enrolments.Any())
+                    @if (Model.Enrolments == null || !Model.Enrolments.Any())
                     {
                         <tr>
                             <td colspan="5" class="text-center py-5 text-muted">No applications yet.</td>
