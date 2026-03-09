@@ -8,6 +8,9 @@ namespace volunteerplatform.Models.ViewModels
         [Display(Name = "Full Name")]
         public string? FullName { get; set; }
 
+        public string? Skills { get; set; }
+
+
         [Required]
         [EmailAddress]
         public string? Email { get; set; }

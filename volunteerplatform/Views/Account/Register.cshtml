@@ -28,11 +28,27 @@
 
                     <div class="mb-3">
                         <label asp-for="Role" class="form-label">I want to join as:</label>
-                        <select asp-for="Role" class="form-select">
+                        <select asp-for="Role" class="form-select" id="RoleSelector">
                             <option value="Volunteer">Volunteer</option>
                             <option value="Organizer">Organizer</option>
                         </select>
                         <span asp-validation-for="Role" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3" id="SkillsContainer">
+                        <label class="form-label fw-bold small text-uppercase text-muted">My Skills</label>
+                        <input type="hidden" asp-for="Skills" id="HiddenSkills" />
+                        <div class="border rounded-3 p-3 bg-light skill-picker" style="max-height:180px; overflow-y:auto;">
+                            @foreach (var skill in new[] { "Teaching", "IT", "Cooking", "First Aid", "Driving", "Social Media", "Art", "Languages", "Construction", "Animal Care", "Communication", "Organization", "Events", "Design" })
+                            {
+                                <div class="form-check form-check-inline" style="margin: 4px 6px;">
+                                    <input class="form-check-input skill-cb" type="checkbox" value="@skill" id="skill_@skill.Replace(" ", "_")" />
+                                    <label class="form-check-label small" for="skill_@skill.Replace(" ", "_")">@skill</label>
+                                </div>
+                            }
+                        </div>
+                        <small class="text-muted mt-1 d-block">Select skills you have so we can match you with the right missions.</small>
+                        <span asp-validation-for="Skills" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
@@ -61,4 +77,43 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elRole = document.getElementById('RoleSelector');
+            var elSkillsCont = document.getElementById('SkillsContainer');
+            
+            function toggleSkills() {
+                if (elRole.value === 'Volunteer') {
+                    elSkillsCont.style.display = 'block';
+                } else {
+                    elSkillsCont.style.display = 'none';
+                    document.getElementById('HiddenSkills').value = '';
+                    var cbs = document.querySelectorAll('.skill-cb');
+                    cbs.forEach(cb => cb.checked = false);
+                }
+            }
+
+            elRole.addEventListener('change', toggleSkills);
+            toggleSkills(); // initial call
+
+            function updateSkills() {
+                var checked = Array.from(document.querySelectorAll('.skill-cb:checked'))
+                                   .map(cb => cb.value);
+                document.getElementById('HiddenSkills').value = checked.join(', ');
+            }
+            
+            document.querySelectorAll('.skill-cb').forEach(cb => {
+                cb.addEventListener('change', updateSkills);
+            });
+
+            // Reselect if validation failed and user is back on the page
+            var existing = document.getElementById('HiddenSkills').value;
+            if (existing) {
+                existing.split(',').map(s => s.trim()).forEach(function(skill) {
+                    var cb = document.querySelector('.skill-cb[value="' + skill + '"]');
+                    if (cb) cb.checked = true;
+                });
+            }
+        });
+    </script>
 }

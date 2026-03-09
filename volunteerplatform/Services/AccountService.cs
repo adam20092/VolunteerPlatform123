@@ -23,7 +23,8 @@ namespace volunteerplatform.Services
             {
                 UserName = model.Email,
                 Email = model.Email,
-                FullName = model.FullName
+                FullName = model.FullName,
+                Skills = model.Skills
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
