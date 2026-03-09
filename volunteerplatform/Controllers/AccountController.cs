@@ -22,6 +22,11 @@ namespace volunteerplatform.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            if (model.Role == "Volunteer" && string.IsNullOrWhiteSpace(model.Skills))
+            {
+                ModelState.AddModelError("Skills", "Please select at least one skill.");
+            }
+
             if (!ModelState.IsValid) return View(model);
 
             var (result, _) = await _accountService.RegisterAsync(model);
