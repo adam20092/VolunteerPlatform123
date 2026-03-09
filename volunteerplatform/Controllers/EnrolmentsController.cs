@@ -51,7 +51,7 @@ namespace volunteerplatform.Controllers
 
             if (!success)
             {
-                TempData["Message"] = "You have already applied for this mission.";
+                TempData["Message"] = "You applied for this mission.";
             }
             else
             {
