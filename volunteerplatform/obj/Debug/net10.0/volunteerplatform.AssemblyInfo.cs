@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("volunteerplatform")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d5567263d82d51447c30a1a8b1835042a74ff85a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a0cec9b4cc2b7f64ad8d929cdbe5ad948c42df27")]
 [assembly: System.Reflection.AssemblyProductAttribute("volunteerplatform")]
 [assembly: System.Reflection.AssemblyTitleAttribute("volunteerplatform")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

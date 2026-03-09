@@ -46,7 +46,7 @@ namespace volunteerplatform.Services
             foreach (var v in volunteers)
             {
                 v.Rank = rank++;
-                if (v.TotalPoints >= 1000) { v.Badge = "Legend"; v.BadgeColor = "bg-warning text-dark"; }
+                if (v.TotalPoints >= 1000) { v.Badge = "Legend"; v.BadgeColor = "bg-red"; }
                 else if (v.TotalPoints >= 500) { v.Badge = "Hero"; v.BadgeColor = "bg-primary"; }
                 else if (v.TotalPoints >= 100) { v.Badge = "Rising Star"; v.BadgeColor = "bg-success"; }
                 else { v.Badge = "Newbie"; v.BadgeColor = "bg-secondary"; }
