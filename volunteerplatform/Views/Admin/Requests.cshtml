@@ -10,6 +10,22 @@
         <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
     </div>
 
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="card shadow-sm">
         <div class="card-body">
             @if (!Model.Any())
@@ -79,6 +95,13 @@
                                                 <button type="submit" class="btn btn-sm btn-link text-muted">Reset</button>
                                             </form>
                                         }
+                                        <form asp-controller="Enrolments" asp-action="Remove" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this candidate? This action cannot be undone.')">
+                                            <input type="hidden" name="id" value="@request.Id" />
+                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger ms-1" title="Remove Candidate">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             }

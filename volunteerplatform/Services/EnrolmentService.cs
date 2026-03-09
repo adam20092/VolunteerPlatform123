@@ -80,5 +80,15 @@ namespace volunteerplatform.Services
 
             return enrolment.CertificateCode;
         }
+
+        public async Task<bool> DeleteEnrolmentAsync(int enrolmentId)
+        {
+            var enrolment = await _context.Enrolments.FindAsync(enrolmentId);
+            if (enrolment == null) return false;
+
+            _context.Enrolments.Remove(enrolment);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

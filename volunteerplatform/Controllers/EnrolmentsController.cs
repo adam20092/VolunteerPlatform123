@@ -103,6 +103,37 @@ namespace volunteerplatform.Controllers
             return RedirectToAction("Manage", new { id = enrolment.InitiativeId });
         }
 
+        // POST: Enrolments/Remove/5
+        [HttpPost]
+        [Authorize(Roles = "Organizer,Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Remove(int id, string? returnUrl = null)
+        {
+            var enrolment = await _enrolmentService.GetEnrolmentByIdAsync(id);
+            if (enrolment == null) return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            // Check if user is Admin or the Organizer of the initiative
+            if (enrolment.Initiative.OrganizerId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            var initiativeId = enrolment.InitiativeId;
+            await _enrolmentService.DeleteEnrolmentAsync(id);
+
+            TempData["Success"] = "Candidate removed successfully.";
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return RedirectToAction("Manage", new { id = initiativeId });
+        }
+
         // GET: Enrolments/Certificate/5
         public async Task<IActionResult> Certificate(int id)
         {

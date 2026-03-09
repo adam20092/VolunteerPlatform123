@@ -10,5 +10,6 @@ namespace volunteerplatform.Services
         Task<bool> UpdateStatusAsync(int enrolmentId, EnrolmentStatus status);
         Task<Enrolment?> GetEnrolmentByIdAsync(int enrolmentId);
         Task<string> EnsureCertificateCodeAsync(int enrolmentId);
+        Task<bool> DeleteEnrolmentAsync(int enrolmentId);
     }
 }
