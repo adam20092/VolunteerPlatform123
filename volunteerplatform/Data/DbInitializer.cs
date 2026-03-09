@@ -379,12 +379,217 @@ namespace volunteerplatform.Data
                 await context.SaveChangesAsync();
 
                 // ─── 7. UPDATE VOLUNTEER RATINGS (average score) ──────────────────────
-                await UpdateVolunteerRating(userManager, vol1.Id, context);
-                await UpdateVolunteerRating(userManager, vol2.Id, context);
-                await UpdateVolunteerRating(userManager, vol3.Id, context);
-                await UpdateVolunteerRating(userManager, vol5.Id, context);
                 await UpdateVolunteerRating(userManager, vol6.Id, context);
             }
+
+            // ─── 8. MASS SEEDING (Populate with many more) ──────────────────────────
+            if (!context.Users.Any(u => u.UserName.Contains("_extra")))
+            {
+                var random = new Random();
+                var cities = new[] { "Sofia", "Plovdiv", "Varna", "Burgas", "Ruse", "Stara Zagora", "Pleven", "Veliko Tarnovo" };
+                var skillPool = new[] { "Teaching", "IT", "Cooking", "First Aid", "Driving", "Social Media", "Art", "Languages", "Construction", "Animal Care" };
+                
+                // Fetch existing organizers to assign to new initiatives
+                var organizers = await userManager.GetUsersInRoleAsync("Organizer");
+                if (!organizers.Any()) organizers = new List<ApplicationUser> { admin };
+
+                // Create 50 more volunteers
+                var extraVolunteers = new List<ApplicationUser>();
+                for (int i = 1; i <= 50; i++)
+                {
+                    var email = $"volunteer_extra{i}@example.com";
+                    var user = new ApplicationUser
+                    {
+                        UserName = email,
+                        Email = email,
+                        FullName = GetRandomName(random),
+                        Age = 18 + random.Next(40),
+                        Location = cities[random.Next(cities.Length)],
+                        Skills = string.Join(", ", Enumerable.Range(0, 3).Select(_ => skillPool[random.Next(skillPool.Length)])),
+                        Availability = random.Next(2) == 0 ? "Weekends" : "Flexible",
+                        EmailConfirmed = true
+                    };
+                    var created = await EnsureUser(userManager, user, "Vol123!", "Volunteer");
+                    extraVolunteers.Add(created);
+                }
+
+                // Create 40 more initiatives
+                var initiativeTemplates = new[] {
+                    "Park Restoration", "Code Academy", "Fine Arts Workshop", 
+                    "Safety Awareness", "Senior Support", "River Cleanup",
+                    "Library Expansion", "Community Kitchen", "Tech Help Desk", "Pet Shelter",
+                    "Blood Drive", "Food Distribution", "Marathon Support", "Tree Planting",
+                    "Beach Cleaning", "Youth Mentoring", "Language Exchange", "Recycling Drive"
+                };
+
+                // Coordinates for Bulgarian cities
+                var cityCoords = new Dictionary<string, (double Lat, double Lng)>
+                {
+                    { "Sofia", (42.6977, 23.3219) },
+                    { "Plovdiv", (42.1354, 24.7453) },
+                    { "Varna", (43.2141, 27.9147) },
+                    { "Burgas", (42.5048, 27.4626) },
+                    { "Ruse", (43.8356, 25.9657) },
+                    { "Stara Zagora", (42.4258, 25.6345) },
+                    { "Pleven", (43.4170, 24.6067) },
+                    { "Veliko Tarnovo", (43.0757, 25.6172) }
+                };
+
+                for (int i = 1; i <= 40; i++)
+                {
+                    var status = i <= 25 ? MissionStatus.Finished : MissionStatus.Active;
+                    var city = cities[random.Next(cities.Length)];
+                    var coords = cityCoords[city];
+
+                    // Add a small random offset so they don't overlap perfectly on the map
+                    double latOffset = (random.NextDouble() - 0.5) * 0.05;
+                    double lngOffset = (random.NextDouble() - 0.5) * 0.05;
+
+                    var init = new Initiative
+                    {
+                        Title = $"{initiativeTemplates[random.Next(initiativeTemplates.Length)]} - Region {i}",
+                        Description = "Join this initiative to help our local community. We provide all necessary tools and training for our volunteers.",
+                        Location = city,
+                        Latitude = coords.Lat + latOffset,
+                        Longitude = coords.Lng + lngOffset,
+                        DateAndTime = DateTime.Now.AddDays(status == MissionStatus.Finished ? -random.Next(10, 90) : random.Next(5, 60)),
+                        RequiredVolunteers = 5 + random.Next(30),
+                        RequiredSkills = skillPool[random.Next(skillPool.Length)],
+                        OrganizerId = organizers[random.Next(organizers.Count)].Id,
+                        Status = status,
+                        TargetAmount = random.Next(2, 20) * 100,
+                        CurrentAmount = status == MissionStatus.Finished ? 0 : random.Next(100)
+                    };
+                    if (status == MissionStatus.Finished) init.CurrentAmount = init.TargetAmount ?? 0;
+                    
+                    context.Initiatives.Add(init);
+                }
+                await context.SaveChangesAsync();
+
+                var allFinished = await context.Initiatives.Where(i => i.Status == MissionStatus.Finished).ToListAsync();
+                
+                // Boost volunteers points
+                foreach (var vol in extraVolunteers)
+                {
+                    // Randomly decide how many missions they've "completed"
+                    int completedCount = random.Next(2, 12);
+                    
+                    // Create some TOP volunteers with 30+ completed missions (3000+ points)
+                    if (vol.UserName!.Contains("extra5") || vol.UserName.Contains("extra10") || vol.UserName.Contains("extra15"))
+                    {
+                        completedCount = 30 + random.Next(10);
+                    }
+
+                    var selectedMissions = allFinished.OrderBy(_ => random.Next()).Take(completedCount).ToList();
+                    
+                    foreach (var m in selectedMissions)
+                    {
+                        context.Enrolments.Add(new Enrolment
+                        {
+                            InitiativeId = m.Id,
+                            VolunteerId = vol.Id,
+                            Status = EnrolmentStatus.Approved,
+                            AppliedOn = m.DateAndTime.AddDays(-7),
+                            CertificateCode = "VP-CERT-" + Guid.NewGuid().ToString()[..6].ToUpper()
+                        });
+
+                        context.Ratings.Add(new Rating
+                        {
+                            InitiativeId = m.Id,
+                            VolunteerId = vol.Id,
+                            OrganizerId = m.OrganizerId,
+                            Score = 5,
+                            Comment = "Outstanding performance and commitment!"
+                        });
+                    }
+                }
+                await context.SaveChangesAsync();
+
+                // Final rating update
+                foreach (var vol in extraVolunteers)
+                {
+                    await UpdateVolunteerRating(userManager, vol.Id, context);
+                }
+            }
+
+            // ─── 9. PATCH COORDINATES for any initiatives that are missing them ──────
+            {
+                var random = new Random(42); // fixed seed for consistent offsets
+                var cityCoordMap = new Dictionary<string, (double Lat, double Lng)>(StringComparer.OrdinalIgnoreCase)
+                {
+                    { "Sofia",           (42.6977, 23.3219) },
+                    { "Plovdiv",         (42.1354, 24.7453) },
+                    { "Varna",           (43.2141, 27.9147) },
+                    { "Burgas",          (42.5048, 27.4626) },
+                    { "Ruse",            (43.8356, 25.9657) },
+                    { "Stara Zagora",    (42.4258, 25.6345) },
+                    { "Pleven",          (43.4170, 24.6067) },
+                    { "Veliko Tarnovo",  (43.0757, 25.6172) },
+                    // known locations from original seed:
+                    { "Южен парк, Sofia",                     (42.6688, 23.3136) },
+                    { "Food Bank, Plovdiv",                   (42.1354, 24.7453) },
+                    { "УМБАЛ Александровска, Sofia",          (42.6985, 23.3322) },
+                    { "Централен плаж, Varna",                (43.2049, 27.9118) },
+                    { "Домашен социален патронаж, Sofia",     (42.7120, 23.2880) },
+                    { "Приют за бездомни животни, Varna",     (43.2141, 27.9145) },
+                    { "НЧ Напредък, Plovdiv",                 (42.1496, 24.7500) },
+                    { "Витоша, Sofia",                        (42.5900, 23.2800) },
+                    { "Дом за стари хора, Plovdiv",           (42.1500, 24.7400) },
+                    { "ОУ Васил Левски, Sofia",               (42.6800, 23.3200) }
+                };
+
+                var noCoords = await context.Initiatives
+                    .Where(i => i.Latitude == null || i.Longitude == null)
+                    .ToListAsync();
+
+                foreach (var ini in noCoords)
+                {
+                    // Try exact location match first, then try city name fragments
+                    (double Lat, double Lng) coords = (0, 0);
+                    bool found = false;
+
+                    if (!string.IsNullOrWhiteSpace(ini.Location))
+                    {
+                        if (cityCoordMap.TryGetValue(ini.Location.Trim(), out coords))
+                        {
+                            found = true;
+                        }
+                        else
+                        {
+                            // Try to find a city name contained in the location
+                            foreach (var kv in cityCoordMap)
+                            {
+                                if (ini.Location.Contains(kv.Key, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    coords = kv.Value;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        // Default: centre of Bulgaria
+                        coords = (42.7, 25.3);
+                    }
+
+                    // Small random scatter so pins don't stack exactly
+                    ini.Latitude  = coords.Lat + (random.NextDouble() - 0.5) * 0.04;
+                    ini.Longitude = coords.Lng + (random.NextDouble() - 0.5) * 0.04;
+                }
+
+                if (noCoords.Any())
+                    await context.SaveChangesAsync();
+            }
+        }
+
+        private static string GetRandomName(Random random)
+        {
+            var firstNames = new[] { "James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda", "William", "Elizabeth", "David", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen" };
+            var lastNames = new[] { "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin" };
+            return $"{firstNames[random.Next(firstNames.Length)]} {lastNames[random.Next(lastNames.Length)]}";
         }
 
         // ─── HELPERS ─────────────────────────────────────────────────────────────────

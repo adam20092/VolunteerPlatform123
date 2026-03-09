@@ -4,7 +4,13 @@
 @model volunteerplatform.Models.Initiative
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.Title ?? "Details";
+    var currentUser = await UserManager.GetUserAsync(User);
+    var requiredSkills = (Model.RequiredSkills ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    var volunteerSkills = (currentUser?.Skills ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    var matchedSkills = requiredSkills.Where(rs => volunteerSkills.Any(vs => vs.Equals(rs, StringComparison.OrdinalIgnoreCase))).ToList();
+    bool isVolunteer = User.IsInRole("Volunteer");
+    bool hasSkillMatch = !requiredSkills.Any() || matchedSkills.Any();
 }
 
 <div class="container mt-5">
@@ -41,10 +47,48 @@
             </p>
 
             <h4 class="fw-bold mb-3">Requirements</h4>
-            <ul class="list-group list-group-flush mb-5">
-                <li class="list-group-item bg-transparent px-0"><i class="bi bi-people me-2 text-primary"></i> <strong>@Model.RequiredVolunteers</strong> Volunteers needed</li>
-                <li class="list-group-item bg-transparent px-0"><i class="bi bi-stars me-2 text-primary"></i> Skills: <strong>@Model.RequiredSkills</strong></li>
-            </ul>
+            <div class="mb-3">
+                <i class="bi bi-people me-2 text-primary"></i>
+                <strong>@Model.RequiredVolunteers</strong> Volunteers needed
+            </div>
+            <div class="mb-5">
+                <i class="bi bi-stars me-2 text-primary"></i>
+                <strong class="me-2">Required Skills:</strong>
+                @if (!requiredSkills.Any())
+                {
+                    <span class="badge bg-secondary rounded-pill">No special skills required</span>
+                }
+                else
+                {
+                    foreach (var skill in requiredSkills)
+                    {
+                        bool matched = isVolunteer && matchedSkills.Any(m => m.Equals(skill, StringComparison.OrdinalIgnoreCase));
+                        <span class="badge rounded-pill me-1 mb-1 @(matched ? "bg-success" : "bg-primary")">
+                            @if (matched) { <i class="bi bi-check-lg me-1"></i> }
+                            @skill
+                        </span>
+                    }
+                }
+            </div>
+
+            @if (isVolunteer && requiredSkills.Any())
+            {
+                <div class="alert @(hasSkillMatch ? "alert-success" : "alert-warning") d-flex align-items-center rounded-3 mb-5" role="alert">
+                    <i class="bi @(hasSkillMatch ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") fs-4 me-3"></i>
+                    <div>
+                        @if (hasSkillMatch)
+                        {
+                            <strong>You match @matchedSkills.Count of @requiredSkills.Length required skills!</strong>
+                            <div class="small mt-1">Matched: @string.Join(", ", matchedSkills)</div>
+                        }
+                        else
+                        {
+                            <strong>Your skills don't fully match this mission's requirements.</strong>
+                            <div class="small mt-1">Required: @string.Join(", ", requiredSkills) — but you can still apply!</div>
+                        }
+                    </div>
+                </div>
+            }
 
         </div>
         
