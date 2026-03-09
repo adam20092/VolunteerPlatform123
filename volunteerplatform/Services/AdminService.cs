@@ -8,7 +8,7 @@ namespace volunteerplatform.Services
     public interface IAdminService
     {
         Task<AdminDashboardViewModel> GetDashboardStatsAsync();
-        Task<List<ApplicationUser>> GetAllUsersAsync();
+        Task<List<UserAdminViewModel>> GetAllUsersAsync();
         Task<List<Enrolment>> GetAllRequestsAsync();
     }
 
@@ -36,9 +36,24 @@ namespace volunteerplatform.Services
             };
         }
 
-        public async Task<List<ApplicationUser>> GetAllUsersAsync()
+        public async Task<List<UserAdminViewModel>> GetAllUsersAsync()
         {
-            return await _userManager.Users.ToListAsync();
+            var users = await _userManager.Users
+                .OrderBy(u => u.FullName)
+                .ToListAsync();
+
+            var result = new List<UserAdminViewModel>();
+            foreach (var u in users)
+            {
+                var roles = await _userManager.GetRolesAsync(u);
+                result.Add(new UserAdminViewModel { User = u, Roles = roles });
+            }
+
+            // Sort: Admin first, then Organizer, then Volunteer
+            return result
+                .OrderBy(x => x.RoleDisplay == "Admin" ? 0 : x.RoleDisplay == "Organizer" ? 1 : 2)
+                .ThenBy(x => x.User.FullName)
+                .ToList();
         }
 
         public async Task<List<Enrolment>> GetAllRequestsAsync()

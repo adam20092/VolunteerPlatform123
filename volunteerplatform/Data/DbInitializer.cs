@@ -583,6 +583,39 @@ namespace volunteerplatform.Data
                 if (noCoords.Any())
                     await context.SaveChangesAsync();
             }
+
+            // ─── 10. PATCH SKILLS for older data ────────────────────────────────────
+            {
+                var skillPool = new[] { "Teaching", "IT", "Cooking", "First Aid", "Driving", "Social Media", "Art", "Languages", "Construction", "Animal Care", "Communication", "Organization", "Events", "Design" };
+                var random = new Random(99);
+
+                // Patch Initiatives
+                var initiativesToPatch = await context.Initiatives
+                    .Where(i => string.IsNullOrWhiteSpace(i.RequiredSkills))
+                    .ToListAsync();
+
+                foreach (var ini in initiativesToPatch)
+                {
+                    // Assign 1-3 random skills
+                    var count = random.Next(1, 4);
+                    ini.RequiredSkills = string.Join(", ", skillPool.OrderBy(_ => random.Next()).Take(count));
+                }
+
+                // Patch Volunteers (for users that might not have skills)
+                var volunteers = await userManager.GetUsersInRoleAsync("Volunteer");
+                foreach (var vol in volunteers)
+                {
+                    if (string.IsNullOrWhiteSpace(vol.Skills))
+                    {
+                        var count = random.Next(2, 5);
+                        vol.Skills = string.Join(", ", skillPool.OrderBy(_ => random.Next()).Take(count));
+                        await userManager.UpdateAsync(vol);
+                    }
+                }
+
+                if (initiativesToPatch.Any())
+                    await context.SaveChangesAsync();
+            }
         }
 
         private static string GetRandomName(Random random)

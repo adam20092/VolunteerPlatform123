@@ -1,29 +1,198 @@
-@model IEnumerable<volunteerplatform.Models.ApplicationUser>
+@model IEnumerable<volunteerplatform.Models.ViewModels.UserAdminViewModel>
 
 @{
-    ViewData["Title"] = "All Users";
+    ViewData["Title"] = "User Management";
+    var roleColors = new Dictionary<string, string> {
+        { "Admin", "bg-danger" }, { "Organizer", "bg-warning text-dark" }, { "Volunteer", "bg-primary" }
+    };
 }
 
-<div class="container mt-5">
-    <h2>All Users</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Email</th>
-                <th>Name</th>
-                <th>Id</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.Email</td>
-                    <td>@item.FullName</td>
-                    <td>@item.Id</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <a asp-action="Index" class="btn btn-secondary">Back to Dashboard</a>
+<div class="container-fluid mt-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">User Management</h2>
+            <p class="text-muted mb-0">@Model.Count() registered users across all roles</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">
+            <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-3">
+            <div class="row align-items-center g-3">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" id="userSearch" class="form-control border-start-0" placeholder="Search by name, email, skill..." />
+                    </div>
+                </div>
+                <div class="col-md-7 d-flex gap-2 flex-wrap">
+                    <button class="btn btn-sm rounded-pill role-filter active" data-role="all">All (@Model.Count())</button>
+                    <button class="btn btn-sm rounded-pill role-filter btn-outline-danger" data-role="Admin">
+                        Admins (@Model.Count(u => u.RoleDisplay == "Admin"))
+                    </button>
+                    <button class="btn btn-sm rounded-pill role-filter btn-outline-warning" data-role="Organizer">
+                        Organizers (@Model.Count(u => u.RoleDisplay == "Organizer"))
+                    </button>
+                    <button class="btn btn-sm rounded-pill role-filter btn-outline-primary" data-role="Volunteer">
+                        Volunteers (@Model.Count(u => u.RoleDisplay == "Volunteer"))
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Cards Grid -->
+    <div class="row g-3" id="usersGrid">
+        @foreach (var item in Model)
+        {
+            var skills = (item.User.Skills ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var initials = string.IsNullOrEmpty(item.User.FullName) ? "?" : string.Concat(item.User.FullName.Split(' ').Take(2).Select(p => p[0])).ToUpper();
+            var roleClass = roleColors.TryGetValue(item.RoleDisplay, out var rc) ? rc : "bg-secondary";
+
+            <div class="col-md-6 col-xl-4 user-card-wrapper" data-role="@item.RoleDisplay" data-searchtext="@item.User.FullName?.ToLower() @item.User.Email?.ToLower() @item.User.Skills?.ToLower() @item.User.Location?.ToLower()">
+                <div class="card border-0 shadow-sm h-100 user-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start mb-3">
+                            <!-- Avatar -->
+                            <div class="rounded-circle d-flex justify-content-center align-items-center me-3 flex-shrink-0 fw-bold text-white fs-5" 
+                                 style="width:52px;height:52px;background: linear-gradient(135deg,#B71C1C,#e53935);">
+                                @initials
+                            </div>
+                            <div class="flex-grow-1 min-w-0">
+                                <h6 class="fw-bold mb-0 text-truncate">@(item.User.FullName ?? "—")</h6>
+                                <small class="text-muted text-truncate d-block">@item.User.Email</small>
+                                <span class="badge @roleClass rounded-pill mt-1 small">@item.RoleDisplay</span>
+                            </div>
+                        </div>
+
+                        @if (item.RoleDisplay == "Volunteer")
+                        {
+                            <hr class="my-3" />
+                            <div class="row g-2 mb-3 text-center">
+                                <div class="col-4">
+                                    <div class="bg-light rounded-3 py-2 px-1">
+                                        <div class="fw-bold text-primary small">@(item.User.Age > 0 ? item.User.Age.ToString() : "—")</div>
+                                        <div class="text-muted" style="font-size:0.65rem;">Age</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="bg-light rounded-3 py-2 px-1">
+                                        <div class="fw-bold text-warning small">
+                                            @for (int s = 1; s <= 5; s++) {
+                                                <i class="bi bi-star@(s <= item.User.Rating ? "-fill" : "") text-warning" style="font-size:0.6rem;"></i>
+                                            }
+                                        </div>
+                                        <div class="text-muted" style="font-size:0.65rem;">Rating</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="bg-light rounded-3 py-2 px-1">
+                                        <div class="fw-bold text-success small text-truncate">@(item.User.Availability ?? "—")</div>
+                                        <div class="text-muted" style="font-size:0.65rem;">Avail.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(item.User.Location))
+                            {
+                                <div class="mb-2 small text-muted">
+                                    <i class="bi bi-geo-alt me-1 text-primary"></i>@item.User.Location
+                                </div>
+                            }
+
+                            <!-- Skills -->
+                            <div class="d-flex flex-wrap gap-1">
+                                @if (skills.Any())
+                                {
+                                    @foreach (var sk in skills)
+                                    {
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill" style="font-size:0.7rem;">
+                                            <i class="bi bi-check-circle me-1"></i>@sk
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted small fst-italic">No skills listed</span>
+                                }
+                            </div>
+                        }
+                        else if (item.RoleDisplay == "Organizer")
+                        {
+                            <hr class="my-3" />
+                            <div class="small text-muted">
+                                <i class="bi bi-building me-1 text-warning"></i>
+                                <strong>@(item.User.OrganizationName ?? "—")</strong>
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.User.Location))
+                            {
+                                <div class="small text-muted mt-1">
+                                    <i class="bi bi-geo-alt me-1 text-primary"></i>@item.User.Location
+                                </div>
+                            }
+                            <div class="mt-2">
+                                @if (item.User.IsVerified)
+                                {
+                                    <span class="badge bg-success rounded-pill"><i class="bi bi-patch-check me-1"></i>Verified</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary rounded-pill"><i class="bi bi-clock me-1"></i>Pending Verification</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div id="noResults" class="text-center py-5 d-none">
+        <i class="bi bi-person-slash display-1 text-muted"></i>
+        <p class="text-muted mt-3">No users match your search.</p>
+    </div>
 </div>
+
+<style>
+    .user-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .user-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1) !important; }
+    .role-filter { border: 1px solid #dee2e6; }
+    .role-filter.active { background-color: #B71C1C; border-color: #B71C1C; color: white; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const search = document.getElementById('userSearch');
+        const cards = document.querySelectorAll('.user-card-wrapper');
+        const noResults = document.getElementById('noResults');
+        const filters = document.querySelectorAll('.role-filter');
+        let activeRole = 'all';
+
+        function applyFilters() {
+            const query = search.value.toLowerCase().trim();
+            let visible = 0;
+            cards.forEach(card => {
+                const matchRole = activeRole === 'all' || card.dataset.role === activeRole;
+                const matchSearch = !query || card.dataset.searchtext.includes(query);
+                const show = matchRole && matchSearch;
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            noResults.classList.toggle('d-none', visible > 0);
+        }
+
+        search.addEventListener('input', applyFilters);
+
+        filters.forEach(btn => {
+            btn.addEventListener('click', function () {
+                filters.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                activeRole = this.dataset.role;
+                applyFilters();
+            });
+        });
+    });
+</script>
