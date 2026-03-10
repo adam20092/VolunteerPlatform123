@@ -139,10 +139,23 @@
     </div>
 </div>
 
+@using Microsoft.AspNetCore.Identity
+@using volunteerplatform.Models
+@inject SignInManager<ApplicationUser> SignInManager
+
 <section class="bg-red py-5">
     <div class="container text-center text-white py-4">
-        <h2 class="fw-bold mb-4">Ready to start your journey?</h2>
-        <p class="lead mb-5">Join thousands of volunteers making an impact today.</p>
-        <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg rounded-pill px-5 fw-bold text-primary">Join Us Now</a>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <h2 class="fw-bold mb-4 text-white">Continue your journey with us!</h2>
+            <p class="lead mb-5 text-white">Explore new missions and keep making a positive impact.</p>
+            <a asp-controller="Initiatives" asp-action="Index" class="btn btn-light btn-lg rounded-pill px-5 fw-bold text-primary">Explore Initiatives</a>
+        }
+        else
+        {
+            <h2 class="fw-bold mb-4 text-white">Ready to start your journey?</h2>
+            <p class="lead mb-5 text-white">Join thousands of volunteers making an impact today.</p>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg rounded-pill px-5 fw-bold text-primary">Join Us Now</a>
+        }
     </div>
 </section>
