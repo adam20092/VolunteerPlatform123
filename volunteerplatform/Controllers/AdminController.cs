@@ -31,5 +31,46 @@ namespace volunteerplatform.Controllers
             var requests = await _adminService.GetAllRequestsAsync();
             return View(requests);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            var currentUser = await _adminService.GetAllUsersAsync();
+            var targetUserViewModel = currentUser.FirstOrDefault(u => u.User.Id == userId);
+
+            if (targetUserViewModel == null)
+            {
+                TempData["Error"] = "User not found.";
+                return RedirectToAction("Users");
+            }
+
+            // Safety Checks:
+            // 1. Cannot delete self
+            var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserId == userId)
+            {
+                TempData["Error"] = "You cannot delete your own account.";
+                return RedirectToAction("Users");
+            }
+
+            // 2. Regular Admin cannot delete SuperAdmin
+            if (User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && targetUserViewModel.RoleDisplay == "SuperAdmin")
+            {
+                TempData["Error"] = "You do not have permission to delete a SuperAdmin.";
+                return RedirectToAction("Users");
+            }
+
+            var success = await _adminService.DeleteUserAsync(userId);
+            if (success)
+            {
+                TempData["Success"] = "User deleted successfully.";
+            }
+            else
+            {
+                TempData["Error"] = "An error occurred while deleting the user.";
+            }
+
+            return RedirectToAction("Users");
+        }
     }
 }

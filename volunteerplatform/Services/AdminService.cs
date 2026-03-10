@@ -10,6 +10,7 @@ namespace volunteerplatform.Services
         Task<AdminDashboardViewModel> GetDashboardStatsAsync();
         Task<List<UserAdminViewModel>> GetAllUsersAsync();
         Task<List<Enrolment>> GetAllRequestsAsync();
+        Task<bool> DeleteUserAsync(string userId);
     }
 
     public class AdminService : IAdminService
@@ -63,6 +64,54 @@ namespace volunteerplatform.Services
                 .Include(e => e.Volunteer)
                 .OrderByDescending(e => e.AppliedOn)
                 .ToListAsync();
+        }
+
+        public async Task<bool> DeleteUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return false;
+
+            // 1. Delete enrolments where user is a volunteer
+            var enrolments = _context.Enrolments.Where(e => e.VolunteerId == userId);
+            _context.Enrolments.RemoveRange(enrolments);
+
+            // 2. Delete ratings involving this user
+            // 2a. User as volunteer
+            var volunteerRatings = _context.Ratings.Where(r => r.VolunteerId == userId);
+            _context.Ratings.RemoveRange(volunteerRatings);
+
+            // 2b. User as organizer (ratings they gave)
+            var organizerRatings = _context.Ratings.Where(r => r.OrganizerId == userId);
+            _context.Ratings.RemoveRange(organizerRatings);
+
+            // 3. Anonymize donations (or delete them)
+            var donations = _context.Donations.Where(d => d.DonorId == userId);
+            foreach (var donation in donations)
+            {
+                donation.DonorId = null; // Keep the record but remove the linked user
+            }
+
+            // 4. Handle Initiatives organized by this user
+            var initiatives = await _context.Initiatives
+                .Include(i => i.Enrolments)
+                .Include(i => i.Donations)
+                .Where(i => i.OrganizerId == userId)
+                .ToListAsync();
+
+            foreach (var initiative in initiatives)
+            {
+                // Explicitly remove related data if needed, or let DB cascade handle it
+                if (initiative.Enrolments != null) _context.Enrolments.RemoveRange(initiative.Enrolments);
+                if (initiative.Donations != null) _context.Donations.RemoveRange(initiative.Donations);
+                
+                _context.Initiatives.Remove(initiative);
+            }
+
+            await _context.SaveChangesAsync();
+
+            // 5. Delete the user
+            var result = await _userManager.DeleteAsync(user);
+            return result.Succeeded;
         }
     }
 }
