@@ -1,73 +1,479 @@
 @model IEnumerable<volunteerplatform.Models.Initiative>
 @{
     ViewData["Title"] = "Mission Map Discovery";
+    Layout = "_Layout";
 }
 
-<div class="container-fluid p-0" style="margin-top: -24px;">
-    <div id="discovery-map" style="height: calc(100vh - 56px); width: 100%;"></div>
-    
-    <!-- Floating Legend/Info -->
-    <div class="position-absolute translate-middle-y start-0 ms-4 bg-white p-4 shadow-lg rounded-4 d-none d-md-block" style="top: 50%; z-index: 1000; width: 300px; max-height: 80vh; overflow-y: auto;">
-        <h4 class="fw-bold mb-3">Discover Missions</h4>
-        <p class="text-muted small">Explore volunteering opportunities across the map. Click a marker to see more details.</p>
-        <hr/>
-        <div id="mission-list-sidebar">
-            @foreach(var item in Model) {
-                <div class="mb-3 p-2 hover-bg-light rounded-3 cursor-pointer" onclick="focusOnMission(@item.Latitude, @item.Longitude)">
-                    <h6 class="fw-bold mb-1">@item.Title</h6>
-                    <small class="text-primary"><i class="bi bi-geo-alt me-1"></i> @item.Location</small>
-                </div>
-            }
-        </div>
-    </div>
-</div>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <style>
-    .hover-bg-light:hover { background-color: #f8f9fa; transition: 0.2s; }
-    .cursor-pointer { cursor: pointer; }
-    .leaflet-popup-content-wrapper { border-radius: 12px; padding: 5px; }
-    .leaflet-popup-tip { display: none; }
+    /* ── Page layout ─────────────────────────────────── */
+    .map-page-wrapper {
+        display: flex;
+        height: calc(100vh - 72px);
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────── */
+    .map-sidebar {
+        width: 340px;
+        min-width: 340px;
+        background: #fff;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.10);
+        display: flex;
+        flex-direction: column;
+        z-index: 400;
+        transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+    }
+
+    .map-sidebar-header {
+        background: linear-gradient(135deg, #B71C1C 0%, #7f1010 100%);
+        color: #fff;
+        padding: 1.4rem 1.5rem 1rem;
+        flex-shrink: 0;
+    }
+
+    .map-sidebar-header h4 {
+        color: #fff;
+        font-weight: 800;
+        font-size: 1.25rem;
+        margin: 0;
+    }
+
+    .map-sidebar-header p {
+        font-size: 0.8rem;
+        opacity: 0.85;
+        margin: 0.3rem 0 0;
+    }
+
+    .map-sidebar-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 1rem 1.5rem;
+    }
+
+    .map-sidebar-body::-webkit-scrollbar { width: 4px; }
+    .map-sidebar-body::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+
+    /* search input */
+    .map-search-input {
+        border: 1.5px solid #e0e0e0;
+        border-radius: 50px;
+        padding: 0.55rem 1rem 0.55rem 2.5rem;
+        font-size: 0.875rem;
+        width: 100%;
+        outline: none;
+        transition: border-color 0.2s;
+        background: #f9f9f9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.868-3.834zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 0.8rem center;
+    }
+
+    .map-search-input:focus { border-color: #B71C1C; background-color: #fff; }
+
+    /* mission list cards */
+    .mission-item {
+        border: 1.5px solid #f0f0f0;
+        border-radius: 12px;
+        padding: 0.8rem 1rem;
+        margin-bottom: 0.6rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: #fff;
+    }
+
+    .mission-item:hover, .mission-item.active {
+        border-color: #B71C1C;
+        background: #fff5f5;
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(183,28,28,0.1);
+    }
+
+    .mission-item h6 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.2rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mission-item .mission-meta {
+        font-size: 0.75rem;
+        color: #888;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .badge-status {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 0.2rem 0.55rem;
+        border-radius: 50px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .badge-active { background: #e8f5e9; color: #2e7d32; }
+    .badge-filled { background: #fff3e0; color: #e65100; }
+    .badge-finished { background: #ede7f6; color: #6a1b9a; }
+
+    .no-results {
+        text-align: center;
+        color: #aaa;
+        padding: 2rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .no-results i { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+
+    /* ── Map container ───────────────────────────────── */
+    #discovery-map {
+        flex: 1;
+        height: 100%;
+        z-index: 1;
+    }
+
+    /* ── Leaflet popup overrides ─────────────────────── */
+    .leaflet-popup-content-wrapper {
+        border-radius: 16px !important;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15) !important;
+        padding: 0 !important;
+        overflow: hidden;
+        min-width: 220px;
+    }
+
+    .leaflet-popup-content {
+        margin: 0 !important;
+        width: auto !important;
+    }
+
+    .leaflet-popup-tip-container { display: none; }
+
+    .popup-inner {
+        padding: 1rem 1.1rem 0.9rem;
+    }
+
+    .popup-inner h6 {
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: #2c3e50;
+        margin-bottom: 0.15rem;
+    }
+
+    .popup-inner .popup-loc {
+        font-size: 0.78rem;
+        color: #B71C1C;
+        margin-bottom: 0.5rem;
+    }
+
+    .popup-inner .popup-row {
+        font-size: 0.78rem;
+        color: #555;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .popup-inner .popup-skills {
+        font-size: 0.7rem;
+        background: #f3f3f3;
+        border-radius: 6px;
+        padding: 0.25rem 0.5rem;
+        margin: 0.4rem 0 0.7rem;
+        color: #666;
+        font-style: italic;
+    }
+
+    .popup-btn {
+        display: block;
+        width: 100%;
+        background: linear-gradient(135deg, #B71C1C 0%, #9e1616 100%);
+        color: #fff !important;
+        text-align: center;
+        padding: 0.55rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        transition: opacity 0.2s;
+        border-radius: 0 0 16px 16px;
+    }
+
+    .popup-btn:hover { opacity: 0.88; }
+
+    /* ── Floating counter badge ──────────────────────── */
+    .map-count-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(8px);
+        border-radius: 50px;
+        padding: 0.45rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #2c3e50;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        z-index: 500;
+        pointer-events: none;
+    }
+
+    /* ── Mobile toggle ───────────────────────────────── */
+    .sidebar-toggle-btn {
+        display: none;
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        z-index: 600;
+        background: #B71C1C;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        font-size: 1.3rem;
+        box-shadow: 0 4px 12px rgba(183,28,28,0.4);
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .sidebar-toggle-btn:hover { background: #9e1616; }
+
+    @@media (max-width: 768px) {
+        .map-sidebar {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            transform: translateX(-100%);
+        }
+
+        .map-sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-toggle-btn { display: flex; align-items: center; justify-content: center; }
+    }
 </style>
 
+<div class="map-page-wrapper" id="mapWrapper">
+
+    <!-- Sidebar -->
+    <aside class="map-sidebar" id="mapSidebar">
+        <div class="map-sidebar-header">
+            <h4><i class="bi bi-map me-2"></i>Mission Discovery</h4>
+            <p>Click a mission or a pin to explore details</p>
+        </div>
+
+        <div class="map-sidebar-body">
+            <!-- Search -->
+            <div class="mb-3">
+                <input type="text"
+                       id="sidebarSearch"
+                       class="map-search-input"
+                       placeholder="Search missions or locations…"
+                       oninput="filterSidebar()">
+            </div>
+
+            <!-- Count -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold text-muted" style="font-size:0.78rem;">
+                    ACTIVE MISSIONS
+                </span>
+                <span class="badge-status badge-active" id="visibleCount">@Model.Count() found</span>
+            </div>
+
+            <!-- Mission List -->
+            <div id="missionList">
+                @{int idx = 0;}
+                @foreach (var item in Model)
+                {
+                    <div class="mission-item"
+                         id="sidebarItem_@item.Id"
+                         data-title="@item.Title?.ToLower()"
+                         data-location="@item.Location?.ToLower()"
+                         onclick="focusMarker(@item.Id)">
+                        <h6>@item.Title</h6>
+                        <div class="mission-meta">
+                            <span><i class="bi bi-geo-alt-fill" style="color:#B71C1C;"></i> @item.Location</span>
+                            <span><i class="bi bi-calendar3"></i> @item.DateAndTime.ToString("dd MMM yyyy")</span>
+                        </div>
+                        <div class="mission-meta mt-1">
+                            <span><i class="bi bi-people-fill"></i> @item.RequiredVolunteers spots</span>
+                            @if (!string.IsNullOrEmpty(item.RequiredSkills))
+                            {
+                                <span style="color:#B71C1C; font-style:italic; font-size:0.72rem;">
+                                    @(item.RequiredSkills.Length > 28 ? item.RequiredSkills.Substring(0, 28) + "…" : item.RequiredSkills)
+                                </span>
+                            }
+                        </div>
+                    </div>
+                    idx++;
+                }
+                @if (!Model.Any())
+                {
+                    <div class="no-results">
+                        <i class="bi bi-emoji-frown"></i>
+                        No missions with location data found.<br/>
+                        Organizers can add coordinates when creating initiatives.
+                    </div>
+                }
+            </div>
+
+            <div class="no-results d-none" id="noResultsMsg">
+                <i class="bi bi-search"></i>
+                No missions match your search.
+            </div>
+        </div>
+    </aside>
+
+    <!-- Map -->
+    <div style="position:relative; flex:1; height:100%;">
+
+        <!-- Mobile sidebar toggle -->
+        <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Toggle mission list">
+            <i class="bi bi-list" id="sidebarToggleIcon"></i>
+        </button>
+
+        <!-- Floating count badge (desktop) -->
+        <div class="map-count-badge d-none d-md-block">
+            <i class="bi bi-geo-alt-fill me-1" style="color:#B71C1C;"></i>
+            <span id="mapCountBadge">@Model.Count()</span> mission@(Model.Count() == 1 ? "" : "s") on map
+        </div>
+
+        <div id="discovery-map"></div>
+    </div>
+
+</div>
+
+@section Scripts {
 <script>
-    var map;
-    document.addEventListener('DOMContentLoaded', function() {
-        // Default view: Center of Bulgaria (approximately)
-        map = L.map('discovery-map').setView([42.7, 25.3], 7);
-
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
-        }).addTo(map);
-
-        var markers = [];
-        @foreach (var item in Model)
-        {
-            <text>
-            var marker = L.marker([@item.Latitude, @item.Longitude]).addTo(map);
-            var popupContent = `
-                <div class="p-2">
-                    <h6 class="fw-bold mb-1">@item.Title</h6>
-                    <p class="text-muted small mb-2">@item.Location</p>
-                    <a href="/Initiatives/Details/@item.Id" class="btn btn-primary btn-sm rounded-pill w-100">View Details</a>
-                </div>
-            `;
-            marker.bindPopup(popupContent);
-            markers.push(marker);
-            </text>
-        }
-
-        if (markers.length > 0) {
-            var group = new L.featureGroup(markers);
-            map.fitBounds(group.getBounds().pad(0.1));
-        }
-    });
-
-    function focusOnMission(lat, lng) {
-        map.setView([lat, lng], 14, { animate: true, duration: 1 });
+(function () {
+    // ── Custom marker icon ──────────────────────────────────────────────────
+    function makeIcon(color) {
+        var svg = encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 42" width="32" height="42">' +
+            '<path d="M16 0C9.373 0 4 5.373 4 12c0 9 12 30 12 30s12-21 12-30C28 5.373 22.627 0 16 0z" fill="' + color + '" stroke="#fff" stroke-width="1.5"/>' +
+            '<circle cx="16" cy="12" r="5" fill="#fff"/>' +
+            '</svg>'
+        );
+        return L.icon({
+            iconUrl: 'data:image/svg+xml,' + svg,
+            iconSize: [32, 42],
+            iconAnchor: [16, 42],
+            popupAnchor: [0, -44]
+        });
     }
+
+    var defaultIcon  = makeIcon('#B71C1C');
+    var activeIcon   = makeIcon('#1565C0');
+
+    // ── Leaflet map setup ───────────────────────────────────────────────────
+    var map = L.map('discovery-map', { zoomControl: false });
+
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }).addTo(map);
+
+    // ── Build markers from server data ──────────────────────────────────────
+    var markersById = {};
+    var allMarkerLayer = L.featureGroup().addTo(map);
+
+    @foreach (var item in Model)
+    {
+        var titleEscaped = (item.Title ?? "").Replace("'", "\\'").Replace("\r", "").Replace("\n", " ");
+        var locationEscaped = (item.Location ?? "").Replace("'", "\\'");
+        var skills = (item.RequiredSkills ?? "").Replace("'", "\\'");
+        var dateStr = item.DateAndTime.ToString("dd MMM yyyy, HH:mm");
+        <text>
+        (function(){
+            var marker = L.marker([@item.Latitude?.ToString(System.Globalization.CultureInfo.InvariantCulture), @item.Longitude?.ToString(System.Globalization.CultureInfo.InvariantCulture)], { icon: defaultIcon });
+
+            var popup = L.popup({ className: '', maxWidth: 260, closeButton: true }).setContent(
+                '<div class="popup-inner">' +
+                    '<h6>@titleEscaped</h6>' +
+                    '<div class="popup-loc"><i class="bi bi-geo-alt-fill me-1"></i>@locationEscaped</div>' +
+                    '<div class="popup-row"><i class="bi bi-calendar3"></i>@dateStr</div>' +
+                    '<div class="popup-row"><i class="bi bi-people-fill"></i>@item.RequiredVolunteers volunteer spots</div>' +
+                    @if (!string.IsNullOrEmpty(item.RequiredSkills))
+                    {
+                        <text>'<div class="popup-skills"><i class="bi bi-tools me-1"></i>@skills</div>' +</text>
+                    }
+                '</div>' +
+                '<a href="/Initiatives/Details/@item.Id" class="popup-btn">View Details &rarr;</a>'
+            );
+
+            marker.bindPopup(popup);
+            marker.on('click', function() { highlightSidebar(@item.Id); });
+            marker.addTo(allMarkerLayer);
+            markersById[@item.Id] = marker;
+        })();
+        </text>
+    }
+
+    // ── Fit map to markers or default to Bulgaria ──────────────────────────
+    if (allMarkerLayer.getLayers().length > 0) {
+        map.fitBounds(allMarkerLayer.getBounds().pad(0.15));
+    } else {
+        map.setView([42.7, 25.3], 7);
+    }
+
+    // ── Sidebar: focus on marker ───────────────────────────────────────────
+    window.focusMarker = function(id) {
+        var marker = markersById[id];
+        if (!marker) return;
+        map.flyTo(marker.getLatLng(), 13, { animate: true, duration: 0.8 });
+        marker.openPopup();
+        highlightSidebar(id);
+        // Close sidebar on mobile after clicking
+        if (window.innerWidth < 769) {
+            document.getElementById('mapSidebar').classList.remove('open');
+            document.getElementById('sidebarToggleIcon').className = 'bi bi-list';
+        }
+    };
+
+    function highlightSidebar(id) {
+        document.querySelectorAll('.mission-item').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        var el = document.getElementById('sidebarItem_' + id);
+        if (el) {
+            el.classList.add('active');
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+
+    // ── Sidebar search filter ──────────────────────────────────────────────
+    window.filterSidebar = function() {
+        var q = document.getElementById('sidebarSearch').value.toLowerCase().trim();
+        var items = document.querySelectorAll('.mission-item');
+        var visible = 0;
+
+        items.forEach(function(el) {
+            var title    = (el.dataset.title || '');
+            var location = (el.dataset.location || '');
+            var match    = !q || title.includes(q) || location.includes(q);
+            el.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+
+        document.getElementById('visibleCount').textContent = visible + ' found';
+        document.getElementById('mapCountBadge').textContent = visible;
+        document.getElementById('noResultsMsg').classList.toggle('d-none', visible > 0);
+    };
+
+    // ── Mobile sidebar toggle ──────────────────────────────────────────────
+    window.toggleSidebar = function() {
+        var sidebar = document.getElementById('mapSidebar');
+        var icon    = document.getElementById('sidebarToggleIcon');
+        var open    = sidebar.classList.toggle('open');
+        icon.className = open ? 'bi bi-x-lg' : 'bi bi-list';
+    };
+
+}());
 </script>
+}

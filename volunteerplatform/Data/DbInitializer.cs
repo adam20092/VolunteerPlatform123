@@ -179,7 +179,7 @@ namespace volunteerplatform.Data
                 {
                     // Create activity profile
                     int missionsCount = 0;
-                    if (vol.UserName.Contains("volunteer1") || vol.UserName.Contains("volunteer10") || vol.UserName.Contains("volunteer20"))
+                    if (vol.UserName?.Contains("volunteer1") == true || vol.UserName?.Contains("volunteer10") == true || vol.UserName?.Contains("volunteer20") == true)
                         missionsCount = 30 + random.Next(10); // Potential Winners
                     else if (random.Next(10) > 5)
                         missionsCount = 2 + random.Next(8); // Regulars

@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 @using volunteerplatform.Models
 @inject SignInManager<ApplicationUser> SignInManager
 
@@ -184,7 +184,7 @@
             <div class="col-lg-6">
                 <div class="text-center">
                     <div class="champion-avatar-large mx-auto mb-4">
-                        @top.FullName.Substring(0, 1).ToUpper()
+                        @(top.FullName?.Substring(0, 1).ToUpper() ?? "U")
                     </div>
                     <h3 class="fw-bold display-6 mb-1">@top.FullName</h3>
                     <p class="text-muted h4 mb-4">Current Champion: @top.TotalPoints pts</p>
