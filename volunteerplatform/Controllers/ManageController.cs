@@ -12,13 +12,16 @@ namespace volunteerplatform.Controllers
     {
         private readonly IUserProfileService _userProfileService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAchievementService _achievementService;
 
         public ManageController(
             IUserProfileService userProfileService,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IAchievementService achievementService)
         {
             _userProfileService = userProfileService;
             _userManager = userManager;
+            _achievementService = achievementService;
         }
 
         [TempData]
@@ -84,6 +87,17 @@ namespace volunteerplatform.Controllers
 
             StatusMessage = "Your password has been changed.";
             return RedirectToAction(nameof(ChangePassword));
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Volunteer")]
+        public async Task<IActionResult> Achievements()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return NotFound();
+
+            var model = await _achievementService.GetAchievementsAsync(userId);
+            return View(model);
         }
     }
 }

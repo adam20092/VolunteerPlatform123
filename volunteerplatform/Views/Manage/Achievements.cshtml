@@ -1,0 +1,382 @@
+@model volunteerplatform.Models.ViewModels.AchievementsViewModel
+@{
+    ViewData["Title"] = "Achievements";
+}
+
+<style>
+    /* ── Page wrapper ─────────────────────────────────── */
+    .achievements-page {
+        background: linear-gradient(160deg, #fff 0%, #fef2f2 100%);
+        min-height: 80vh;
+        padding: 2.5rem 0 4rem;
+    }
+
+    /* ── Hero stats banner ────────────────────────────── */
+    .ach-hero {
+        background: linear-gradient(135deg, #B71C1C 0%, #7f1010 100%);
+        border-radius: 20px;
+        color: #fff;
+        padding: 2rem 2.5rem;
+        margin-bottom: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(183,28,28,0.30);
+    }
+
+    .ach-hero::before {
+        content: '';
+        position: absolute;
+        top: -40px; right: -40px;
+        width: 200px; height: 200px;
+        background: rgba(255,255,255,0.07);
+        border-radius: 50%;
+    }
+
+    .ach-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -60px; right: 80px;
+        width: 300px; height: 300px;
+        background: rgba(255,255,255,0.04);
+        border-radius: 50%;
+    }
+
+    .ach-hero h2 { color: #fff; font-size: 1.8rem; font-weight: 800; }
+    .ach-hero p  { opacity: 0.85; margin: 0; }
+
+    .ach-stat-box {
+        background: rgba(255,255,255,0.12);
+        border-radius: 14px;
+        padding: 1rem 1.5rem;
+        text-align: center;
+        backdrop-filter: blur(6px);
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .ach-stat-box .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        display: block;
+    }
+
+    .ach-stat-box .stat-label {
+        font-size: 0.72rem;
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        display: block;
+        margin-top: 0.2rem;
+    }
+
+    /* Overall rank badge pill */
+    .rank-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255,255,255,0.18);
+        border-radius: 50px;
+        padding: 0.35rem 1rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border: 1.5px solid rgba(255,255,255,0.35);
+        backdrop-filter: blur(4px);
+    }
+
+    /* ── Category heading ─────────────────────────────── */
+    .category-heading {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #B71C1C;
+        margin: 2rem 0 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .category-heading::after {
+        content: '';
+        flex: 1;
+        height: 1.5px;
+        background: linear-gradient(to right, #f0d0d0, transparent);
+        border-radius: 1px;
+    }
+
+    /* ── Badge card ───────────────────────────────────── */
+    .badge-card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 1.4rem 1.2rem 1.1rem;
+        text-align: center;
+        border: 2px solid transparent;
+        transition: all 0.25s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .badge-card.unlocked {
+        border-color: var(--badge-color, #B71C1C);
+        box-shadow: 0 6px 24px rgba(0,0,0,0.08), 0 0 0 3px rgba(var(--badge-rgb, 183,28,28),0.10);
+    }
+
+    .badge-card.locked {
+        opacity: 0.55;
+        background: #f9f9f9;
+        filter: grayscale(0.5);
+    }
+
+    .badge-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+        opacity: 1;
+        filter: none;
+    }
+
+    /* "UNLOCKED" ribbon */
+    .badge-card.unlocked::before {
+        content: '✓ UNLOCKED';
+        position: absolute;
+        top: 10px; right: -22px;
+        background: var(--badge-color, #B71C1C);
+        color: #fff;
+        font-size: 0.55rem;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        padding: 0.2rem 1.8rem;
+        transform: rotate(35deg);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .badge-icon-wrap {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.9rem;
+        font-size: 2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .badge-card:hover .badge-icon-wrap { transform: scale(1.12) rotate(-5deg); }
+
+    .badge-card h6 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+    }
+
+    .badge-card p {
+        font-size: 0.75rem;
+        color: #888;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+    }
+
+    /* progress bar */
+    .ach-progress-bar-track {
+        background: #eee;
+        border-radius: 50px;
+        height: 6px;
+        overflow: hidden;
+        margin-bottom: 0.3rem;
+    }
+
+    .ach-progress-bar-fill {
+        height: 100%;
+        border-radius: 50px;
+        background: var(--badge-color, #B71C1C);
+        transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    }
+
+    .ach-progress-label {
+        font-size: 0.68rem;
+        color: #aaa;
+        font-weight: 600;
+    }
+
+    /* Locked padlock overlay hint */
+    .locked-hint {
+        font-size: 0.68rem;
+        color: #bbb;
+        margin-top: 0.2rem;
+    }
+
+    /* ── Overall progress bar ─────────────────────────── */
+    .overall-progress-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        margin-bottom: 0.5rem;
+    }
+
+    .overall-progress-track {
+        background: #f0f0f0;
+        border-radius: 50px;
+        height: 14px;
+        overflow: hidden;
+        margin: 0.7rem 0 0.4rem;
+    }
+
+    .overall-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #B71C1C, #ff5252);
+        border-radius: 50px;
+        transition: width 1.5s cubic-bezier(.4,0,.2,1);
+    }
+</style>
+
+<div class="achievements-page">
+<div class="container">
+
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="list-group shadow-sm">
+                <a asp-controller="Manage" asp-action="Index" class="list-group-item list-group-item-action">Profile Details</a>
+                <a asp-controller="Manage" asp-action="ChangePassword" class="list-group-item list-group-item-action">Password Settings</a>
+                <a asp-controller="Manage" asp-action="Achievements" class="list-group-item list-group-item-action active">
+                    <i class="bi bi-trophy-fill me-2"></i>Achievements
+                </a>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9">
+
+            <!-- Hero banner -->
+            <div class="ach-hero">
+                <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+                    <div>
+                        <h2 class="mb-1"><i class="bi bi-trophy-fill me-2"></i>Your Achievements</h2>
+                        <p class="mb-3">Track your volunteering journey and unlock badges as you grow.</p>
+                        <span class="rank-pill">
+                            <i class="bi bi-patch-check-fill"></i>
+                            @Model.OverallBadge
+                        </span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <div class="ach-stat-box">
+                            <span class="stat-value">@Model.TotalPoints</span>
+                            <span class="stat-label">Total Points</span>
+                        </div>
+                        <div class="ach-stat-box">
+                            <span class="stat-value">@Model.CompletedMissions</span>
+                            <span class="stat-label">Missions Done</span>
+                        </div>
+                        <div class="ach-stat-box">
+                            <span class="stat-value">@Model.UnlockedCount / @Model.Achievements.Count</span>
+                            <span class="stat-label">Badges Earned</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall progress -->
+            <div class="overall-progress-card mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-muted" style="font-size:0.8rem;">OVERALL PROGRESS</span>
+                    <span class="fw-bold" style="font-size:0.8rem; color:#B71C1C;">
+                        @Model.UnlockedCount of @Model.Achievements.Count badges
+                    </span>
+                </div>
+                <div class="overall-progress-track">
+                    @{
+                        var overallPct = Model.Achievements.Count > 0
+                            ? (int)((double)Model.UnlockedCount / Model.Achievements.Count * 100)
+                            : 0;
+                    }
+                    <div class="overall-progress-fill" style="width: @overallPct%;"></div>
+                </div>
+                <small class="text-muted">@overallPct% complete — keep going!</small>
+            </div>
+
+            <!-- Achievement categories -->
+            @{
+                var categories = Model.Achievements.GroupBy(a => a.Category);
+                var categoryIcons = new Dictionary<string, string>
+                {
+                    ["Missions"]   = "bi-flag-fill",
+                    ["Donations"]  = "bi-heart-fill",
+                    ["Reputation"] = "bi-star-fill",
+                    ["Explorer"]   = "bi-compass-fill"
+                };
+            }
+
+            @foreach (var group in categories)
+            {
+                <div class="category-heading">
+                    <i class="bi @(categoryIcons.GetValueOrDefault(group.Key, "bi-tag-fill"))"></i>
+                    @group.Key
+                </div>
+
+                <div class="row g-3 mb-2">
+                    @foreach (var ach in group)
+                    {
+                        var pct = ach.MaxProgress > 0 ? (int)((double)ach.Progress / ach.MaxProgress * 100) : 0;
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="badge-card @(ach.Unlocked ? "unlocked" : "locked")"
+                                 style="--badge-color: @ach.Color;">
+                                <div class="badge-icon-wrap"
+                                     style="background: @ach.Color + '22'; color: @ach.Color;">
+                                    <i class="bi @ach.Icon"></i>
+                                </div>
+                                <h6>@ach.Title</h6>
+                                <p>@ach.Description</p>
+
+                                <!-- Progress bar -->
+                                <div class="ach-progress-bar-track">
+                                    <div class="ach-progress-bar-fill" style="width: @pct%; --badge-color: @ach.Color;"></div>
+                                </div>
+                                <div class="ach-progress-label">
+                                    @if (ach.Unlocked)
+                                    {
+                                        <span style="color:@ach.Color; font-weight:700;">
+                                            <i class="bi bi-check-circle-fill"></i> Completed!
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>@ach.Progress / @ach.MaxProgress</span>
+                                    }
+                                </div>
+
+                                @if (!ach.Unlocked)
+                                {
+                                    <div class="locked-hint"><i class="bi bi-lock-fill me-1"></i>Keep going to unlock</div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+        </div><!-- /col-md-9 -->
+    </div><!-- /row -->
+
+</div><!-- /container -->
+</div><!-- /achievements-page -->
+
+@section Scripts {
+<script>
+    // Animate progress bars on load
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.ach-progress-bar-fill, .overall-progress-fill').forEach(function (el) {
+            var target = el.style.width;
+            el.style.width = '0%';
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    el.style.width = target;
+                });
+            });
+        });
+    });
+</script>
+}
