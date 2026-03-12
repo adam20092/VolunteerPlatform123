@@ -50,58 +50,43 @@
 
         <div class="col-lg-10">
             <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-                <div class="card-header bg-dark text-white py-3">
-                    <div class="row align-items-center fw-bold">
-                        <div class="col-2 text-center">Rank</div>
-                        <div class="col-5">Volunteer</div>
-                        <div class="col-2 text-center">Missions</div>
-                        <div class="col-3 text-center">Total Points</div>
+                <div class="card-header bg-dark text-white py-3 d-none d-md-block">
+                    <div class="row align-items-center fw-bold text-center">
+                        <div class="col-2">Rank</div>
+                        <div class="col-5 text-start ps-5">Volunteer</div>
+                        <div class="col-2">Missions</div>
+                        <div class="col-3">Total Points</div>
                     </div>
                 </div>
                 <div class="list-group list-group-flush">
                     @foreach (var v in Model.TopVolunteers)
                     {
                         <div class="list-group-item list-group-item-action py-4 border-bottom @(v.Rank == 1 ? "rank-gold" : v.Rank == 2 ? "rank-silver" : v.Rank == 3 ? "rank-bronze" : "")">
-                            <div class="row align-items-center">
-                                <div class="col-2 text-center">
-                                    @if (v.Rank == 1)
-                                    {
-                                        <span class="display-6">🥇</span>
-                                    }
-                                    else if (v.Rank == 2)
-                                    {
-                                        <span class="display-6">🥈</span>
-                                    }
-                                    else if (v.Rank == 3)
-                                    {
-                                        <span class="display-6">🥉</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="h4 text-muted fw-bold">@v.Rank</span>
-                                    }
+                            <div class="row align-items-center g-2 text-center text-md-start">
+                                <div class="col-3 col-md-2">
+                                    @if (v.Rank == 1)      { <span class="h1">🥇</span> }
+                                    else if (v.Rank == 2) { <span class="h1">🥈</span> }
+                                    else if (v.Rank == 3) { <span class="h1">🥉</span> }
+                                    else                  { <span class="h4 text-muted fw-bold">#@v.Rank</span> }
                                 </div>
-                                <div class="col-5">
+                                <div class="col-9 col-md-5 text-start">
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar-circle me-3 @(v.Rank == 1 ? "bg-warning border-gold" : "")">
+                                        <div class="avatar-circle me-2 me-md-3 @(v.Rank == 1 ? "bg-warning border-gold" : "") d-none d-sm-flex">
                                             @v.FullName.Substring(0, 1).ToUpper()
                                         </div>
                                         <div>
-                                            <h5 class="mb-0 fw-bold">@v.FullName</h5>
+                                            <h5 class="mb-0 fw-bold text-truncate" style="max-width: 150px;">@v.FullName</h5>
                                             <span class="badge @v.BadgeColor rounded-pill small">@v.Badge</span>
-                                            @if (v.Rank == 1)
-                                            {
-                                                <span class="badge bg-red rounded-pill small ms-1 animate-pulse"><i class="bi bi-award-fill"></i> REWARDED</span>
-                                            }
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-2 text-center">
+                                <div class="col-6 col-md-2 mt-3 mt-md-0">
+                                    <small class="text-muted d-md-none d-block">Missions</small>
                                     <span class="h5 fw-bold text-primary">@v.CompletedMissions</span>
                                 </div>
-                                <div class="col-3 text-center">
+                                <div class="col-6 col-md-3 mt-3 mt-md-0">
+                                    <small class="text-muted d-md-none d-block">Points</small>
                                     <span class="h4 fw-bold text-success">@v.TotalPoints</span>
-                                    <small class="text-muted d-block small">pts</small>
                                 </div>
                             </div>
                         </div>
