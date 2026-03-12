@@ -20,17 +20,136 @@
 }
 
 [data-theme='dark'] {
-    --text-color: #e0e0e0;
-    --text-muted: #a0a0a0;
-    --light-bg: #121212;
-    --secondary-color: #ffffff;
-    --white: #1e1e1e;
-    --card-bg: #1e1e1e;
-    --border-color: #333333;
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.7);
+    --text-color: #f8f9fa;
+    --text-muted: #cbd5e0;
+    --light-bg: #000000;
+    --dark-bg: #000000;
+    --secondary-color: #f8f9fa;
+    --white: #000000;
+    --card-bg: #000000;
+    --border-color: #262626;
+    --shadow-sm: 0 2px 8px rgba(255, 255, 255, 0.05);
+    --shadow-md: 0 4px 12px rgba(255, 255, 255, 0.08);
+    --shadow-lg: 0 10px 25px rgba(255, 255, 255, 0.1);
 }
+
+[data-theme='dark'] body {
+    background-color: var(--light-bg);
+    color: var(--text-color);
+}
+
+/* Dark Mode Overrides for Bootstrap Utilities */
+[data-theme='dark'] .bg-white,
+[data-theme='dark'] .bg-light {
+    background-color: var(--card-bg) !important;
+}
+
+[data-theme='dark'] .text-dark,
+[data-theme='dark'] .text-secondary {
+    color: var(--text-color) !important;
+}
+
+[data-theme='dark'] .border,
+[data-theme='dark'] .border-top,
+[data-theme='dark'] .border-bottom,
+[data-theme='dark'] .border-start,
+[data-theme='dark'] .border-end {
+    border-color: var(--border-color) !important;
+}
+
+[data-theme='dark'] .shadow,
+[data-theme='dark'] .shadow-sm,
+[data-theme='dark'] .shadow-lg {
+    box-shadow: var(--shadow-md) !important;
+}
+
+[data-theme='dark'] .list-group-item {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme='dark'] .dropdown-menu {
+    background-color: #0a0a0a;
+    border-color: var(--border-color);
+}
+
+[data-theme='dark'] .dropdown-item {
+    color: var(--text-color);
+}
+
+[data-theme='dark'] .dropdown-item:hover {
+    background-color: #1a1a1a;
+}
+
+[data-theme='dark'] .form-control {
+    background-color: #0a0a0a;
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme='dark'] .form-control:focus {
+    background-color: #0a0a0a;
+    color: var(--text-color);
+}
+
+[data-theme='dark'] hr {
+    border-color: var(--border-color);
+    opacity: 0.3;
+}
+
+[data-theme='dark'] .navbar-brand .text-dark {
+    color: #ffffff !important;
+}
+
+[data-theme='dark'] .champion-avatar-large {
+    border-color: #333333 !important;
+    outline-color: #222222 !important;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8) !important;
+}
+
+[data-theme='dark'] .avatar-circle.border-gold {
+    border-color: #444444 !important;
+}
+
+[data-theme='dark'] .reward-box.bg-white {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme='dark'] .badge.bg-white {
+    background-color: #222222 !important;
+    color: #ffffff !important;
+}
+
+[data-theme='dark'] .bg-opacity-10,
+[data-theme='dark'] .bg-opacity-25 {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme='dark'] .border-white,
+[data-theme='dark'] .border-opacity-50 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme='dark'] .card.rank-gold,
+[data-theme='dark'] .list-group-item.rank-gold {
+    background: linear-gradient(to right, rgba(255, 215, 0, 0.1), #000000) !important;
+}
+
+[data-theme='dark'] .list-group-item:hover {
+    background-color: #0d0d0d !important;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.8) !important;
+}
+
+[data-theme='dark'] .leaflet-container {
+    background: #000 !important;
+}
+
+[data-theme='dark'] .leaflet-tile {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
 
 body {
     font-family: 'Inter', sans-serif;
@@ -278,8 +397,15 @@ input:checked + .slider:before {
 }
 
 [data-theme='dark'] .hero-section {
-    background: linear-gradient(135deg, #1e1e1e 0%, #121212 100%);
+    background: #000000;
 }
+
+[data-theme='dark'] .hero-section-premium {
+    background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+}
+
 
 /* Footer */
 footer.footer {
