@@ -119,6 +119,12 @@
                                     maxZoom: 19,
                                     attribution: 'OSM'
                                 }).addTo(map);
+                                
+                                // Apply dark filter if needed
+                                if(document.documentElement.getAttribute('data-theme') === 'dark') {
+                                    document.querySelector('#map-detail').classList.add('leaflet-dark');
+                                }
+
                                 L.marker([lat, lng]).addTo(map);
                             });
                         </script>

@@ -17,13 +17,20 @@
     .map-sidebar {
         width: 340px;
         min-width: 340px;
-        background: #fff;
+        background: var(--card-bg);
         box-shadow: 4px 0 20px rgba(0,0,0,0.10);
         display: flex;
         flex-direction: column;
         z-index: 400;
         transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+        border-right: 1px solid var(--border-color);
     }
+
+    [data-theme='dark'] .map-sidebar {
+        background: #000000;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+    }
+
 
     .map-sidebar-header {
         background: linear-gradient(135deg, #B71C1C 0%, #7f1010 100%);
@@ -56,28 +63,42 @@
 
     /* search input */
     .map-search-input {
-        border: 1.5px solid #e0e0e0;
+        border: 1.5px solid var(--border-color);
         border-radius: 50px;
         padding: 0.55rem 1rem 0.55rem 2.5rem;
         font-size: 0.875rem;
         width: 100%;
         outline: none;
-        transition: border-color 0.2s;
-        background: #f9f9f9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.868-3.834zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 0.8rem center;
+        transition: all 0.2s;
+        background: var(--light-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.868-3.834zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 0.8rem center;
+        color: var(--text-color);
     }
 
-    .map-search-input:focus { border-color: #B71C1C; background-color: #fff; }
+    [data-theme='dark'] .map-search-input {
+        background-color: #0d0d0d;
+        border-color: #333;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.868-3.834zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E");
+    }
+
+
+    .map-search-input:focus { border-color: #B71C1C; background-color: var(--light-bg); }
+
 
     /* mission list cards */
     .mission-item {
-        border: 1.5px solid #f0f0f0;
+        border: 1.5px solid var(--border-color);
         border-radius: 12px;
         padding: 0.8rem 1rem;
         margin-bottom: 0.6rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        background: #fff;
+        background: var(--card-bg);
     }
+
+    [data-theme='dark'] .mission-item {
+        background: #0d0d0d;
+    }
+
 
     .mission-item:hover, .mission-item.active {
         border-color: #B71C1C;
@@ -86,15 +107,23 @@
         box-shadow: 0 4px 12px rgba(183,28,28,0.1);
     }
 
+    [data-theme='dark'] .mission-item:hover, 
+    [data-theme='dark'] .mission-item.active {
+        background: #1a1a1a;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+
     .mission-item h6 {
         font-size: 0.9rem;
         font-weight: 700;
-        color: #2c3e50;
+        color: var(--text-color);
         margin-bottom: 0.2rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
 
     .mission-item .mission-meta {
         font-size: 0.75rem;
@@ -117,6 +146,17 @@
     .badge-active { background: #e8f5e9; color: #2e7d32; }
     .badge-filled { background: #fff3e0; color: #e65100; }
     .badge-finished { background: #ede7f6; color: #6a1b9a; }
+
+    [data-theme='dark'] .badge-active { background: rgba(46, 125, 50, 0.2); color: #b3ffb3 !important; }
+    [data-theme='dark'] .badge-filled { background: rgba(230, 81, 0, 0.2); color: #ffcc80 !important; }
+    [data-theme='dark'] .badge-finished { background: rgba(106, 27, 154, 0.2); color: #d1c4e9 !important; }
+
+    [data-theme='dark'] .map-count-badge {
+        background: rgba(13, 13, 13, 0.9) !important;
+        color: #fff !important;
+        border: 1px solid #333;
+    }
+
 
     .no-results {
         text-align: center;
@@ -157,9 +197,25 @@
     .popup-inner h6 {
         font-weight: 800;
         font-size: 0.95rem;
-        color: #2c3e50;
+        color: var(--text-color);
         margin-bottom: 0.15rem;
     }
+
+    [data-theme='dark'] .leaflet-popup-content-wrapper {
+        background: #0d0d0d !important;
+        color: #fff !important;
+        border: 1px solid #333;
+    }
+
+    [data-theme='dark'] .popup-inner .popup-row {
+        color: #ccc !important;
+    }
+
+    [data-theme='dark'] .popup-inner .popup-skills {
+        background: #1a1a1a !important;
+        color: #aaa !important;
+    }
+
 
     .popup-inner .popup-loc {
         font-size: 0.78rem;
