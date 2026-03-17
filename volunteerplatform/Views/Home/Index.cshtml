@@ -5,7 +5,7 @@
 <!-- Hero Section -->
 <section class="hero-section-premium text-center text-white d-flex align-items-center">
     <div class="container py-5">
-        <h1 class="display-3 fw-bold mb-3 hero-text-shadow"><span style="color: var(--primary-color);">Travel differently,</span> <br/> <span class="text-white">connect globally</span></h1>
+        <h1 class="display-3 fw-bold mb-3 hero-text-shadow"><span style="color: var(--primary-color);">Travel differently,</span> <br/> <span class="text-white">Make them recognisable</span></h1>
         <p class="lead mb-5 mx-auto hero-text-shadow" style="max-width: 800px; font-size: 1.5rem;">
             The largest and safest community for cultural exchange, working holiday, volunteering, house & pet sitting in 170 countries.
         </p>
@@ -155,6 +155,8 @@
             </div>
         </div>
     </div>
+</div>
+
 <!-- Community Champion Section -->
 @if (ViewBag.TopVolunteer != null)
 {
@@ -184,9 +186,9 @@
             <div class="col-lg-6">
                 <div class="text-center">
                     <div class="champion-avatar-large mx-auto mb-4">
-                        @(top.FullName?.Substring(0, 1).ToUpper() ?? "U")
+                        @((top.FullName ?? "U").Substring(0, 1).ToUpper())
                     </div>
-                    <h3 class="fw-bold display-6 mb-1">@top.FullName</h3>
+                    <h3 class="fw-bold display-6 mb-1">@(top.FullName ?? "Unknown User")</h3>
                     <p class="text-muted h4 mb-4">Current Champion: @top.TotalPoints pts</p>
                     <div class="d-flex justify-content-center gap-2">
                         <span class="badge @top.BadgeColor rounded-pill p-2 px-3 fw-bold">@top.Badge</span>
@@ -232,6 +234,71 @@
 
     .reward-highlight-card:hover {
         transform: translateY(-5px);
+    }
+    
+    /* How it works style enhancements */
+    .how-it-works-step {
+        background: var(--white);
+        padding: 2.5rem 1.5rem;
+        border-radius: 20px;
+        height: 100%;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+    
+    [data-theme='dark'] .how-it-works-step {
+        background: #0d0d0d;
+        border-color: #1a1a1a;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .how-it-works-step:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(183,28,28,0.1);
+    }
+
+    .step-number {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 40px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.2rem;
+        box-shadow: 0 5px 15px rgba(183,28,28,0.4);
+    }
+
+    .step-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(183, 28, 28, 0.08);
+        color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 1rem auto 1.5rem;
+        transition: transform 0.3s ease;
+    }
+    
+    [data-theme='dark'] .step-icon {
+        background: rgba(183, 28, 28, 0.15);
+    }
+
+    .how-it-works-step:hover .step-icon {
+        transform: scale(1.1);
+        background: var(--primary-color);
+        color: white;
     }
 </style>
 

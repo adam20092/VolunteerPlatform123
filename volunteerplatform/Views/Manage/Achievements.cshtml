@@ -231,6 +231,70 @@
         border-radius: 50px;
         transition: width 1.5s cubic-bezier(.4,0,.2,1);
     }
+    /* ── Dark Mode Overrides ────────────────────────── */
+    [data-theme='dark'] .achievements-page {
+        background: linear-gradient(160deg, #000 0%, #0a0505 100%);
+    }
+
+    [data-theme='dark'] .badge-card {
+        background: #0d0d0d;
+        border-color: #1a1a1a;
+    }
+
+    [data-theme='dark'] .badge-card.locked {
+        background: #070707;
+        opacity: 0.45;
+    }
+
+    [data-theme='dark'] .badge-card h6 {
+        color: #fff;
+    }
+
+    [data-theme='dark'] .badge-card p {
+        color: #bbb;
+    }
+
+    [data-theme='dark'] .ach-progress-bar-track,
+    [data-theme='dark'] .overall-progress-track {
+        background: #1a1a1a;
+    }
+
+    [data-theme='dark'] .overall-progress-card {
+        background: #0d0d0d;
+        box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+    }
+
+    [data-theme='dark'] .ach-progress-label,
+    [data-theme='dark'] .locked-hint,
+    [data-theme='dark'] .overall-progress-card .text-muted,
+    [data-theme='dark'] .overall-progress-card small.text-muted {
+        color: #bbb !important;
+    }
+
+    [data-theme='dark'] .overall-progress-card .fw-bold.text-muted {
+        color: #ddd !important;
+    }
+
+    [data-theme='dark'] .category-heading::after {
+        background: linear-gradient(to right, #440000, transparent);
+    }
+
+    [data-theme='dark'] .list-group-item {
+        background-color: #0d0d0d;
+        border-color: #1a1a1a;
+        color: #fff;
+    }
+
+    [data-theme='dark'] .list-group-item:hover {
+        background-color: #151515;
+        color: #B71C1C;
+    }
+
+    [data-theme='dark'] .list-group-item.active {
+        background-color: #B71C1C;
+        border-color: #B71C1C;
+        color: #fff;
+    }
 </style>
 
 <div class="achievements-page">
