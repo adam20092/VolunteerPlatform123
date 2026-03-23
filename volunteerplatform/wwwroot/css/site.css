@@ -19,6 +19,10 @@
     --transition-speed: 0.3s;
 }
 
+.bg-red {
+    background-color: var(--primary-color) !important;
+}
+
 [data-theme='dark'] {
     --text-color: #ffffff;
     --text-muted: #ffffff;
