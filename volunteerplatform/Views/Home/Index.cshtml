@@ -158,9 +158,8 @@
 </div>
 
 <!-- Community Champion Section -->
-@if (ViewBag.TopVolunteer != null)
+@if (ViewBag.TopVolunteer is volunteerplatform.Models.ViewModels.VolunteerStats top)
 {
-    var top = ViewBag.TopVolunteer as volunteerplatform.Models.ViewModels.VolunteerStats;
     <section class="container my-5 py-5 border-top reveal">
         <div class="row align-items-center g-5">
             <div class="col-lg-6">
