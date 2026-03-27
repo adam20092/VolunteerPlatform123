@@ -32,7 +32,10 @@
                                 <label asp-for="Location" class="form-label fw-bold small text-uppercase text-muted">Location</label>
                                 <div class="input-group mb-2">
                                     <span class="input-group-text bg-light"><i class="bi bi-geo-alt"></i></span>
-                                    <input asp-for="Location" class="form-control" placeholder="City, Address" />
+                                    <input asp-for="Location" id="Location" class="form-control" placeholder="City, Address" />
+                                    <button class="btn btn-primary px-3 fw-bold" type="button" id="searchLocationBtn">
+                                        <i class="bi bi-search me-1"></i> Search
+                                    </button>
                                 </div>
                                 <span asp-validation-for="Location" class="text-danger"></span>
                                 
@@ -104,6 +107,47 @@
                 marker = L.marker(e.latlng).addTo(map);
                 document.getElementById('Latitude').value = e.latlng.lat;
                 document.getElementById('Longitude').value = e.latlng.lng;
+            });
+
+            // ── Location Search via Geocoding ────────────────────────────────────
+            var searchBtn = document.getElementById('searchLocationBtn');
+            var locInput = document.getElementById('Location');
+
+            function geocodeLocation() {
+                var query = locInput.value.trim();
+                if (!query) return;
+
+                // Add country specific search if needed, but standard query works well
+                fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(query))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            var lat = parseFloat(data[0].lat);
+                            var lon = parseFloat(data[0].lon);
+                            
+                            if (marker) {
+                                map.removeLayer(marker);
+                            }
+                            marker = L.marker([lat, lon]).addTo(map);
+                            map.setView([lat, lon], 14); // Zoom into the place
+                            
+                            document.getElementById('Latitude').value = lat;
+                            document.getElementById('Longitude').value = lon;
+                        } else {
+                            alert('Location not found on the map. Please try a different search term.');
+                        }
+                    })
+                    .catch(err => console.error('Geocoding error:', err));
+            }
+
+            searchBtn.addEventListener('click', geocodeLocation);
+            
+            // Allow pressing Enter key to search instead of submitting form
+            locInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    geocodeLocation();
+                }
             });
 
             // ── Skills aggregation ───────────────────────────────────────────────
