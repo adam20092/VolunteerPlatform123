@@ -355,7 +355,10 @@
                             <span><i class="bi bi-calendar3"></i> @item.DateAndTime.ToString("dd MMM yyyy")</span>
                         </div>
                         <div class="mission-meta mt-1">
-                            <span><i class="bi bi-people-fill"></i> @item.RequiredVolunteers spots</span>
+                            @{
+                                var approvedCount = item.Enrolments?.Count(e => e.Status == volunteerplatform.Models.EnrolmentStatus.Approved) ?? 0;
+                            }
+                            <span><i class="bi bi-people-fill"></i> @approvedCount/@item.RequiredVolunteers spots</span>
                             @if (!string.IsNullOrEmpty(item.RequiredSkills))
                             {
                                 <span style="color:#B71C1C; font-style:italic; font-size:0.72rem;">
@@ -454,7 +457,7 @@
                     '<h6>@titleEscaped</h6>' +
                     '<div class="popup-loc"><i class="bi bi-geo-alt-fill me-1"></i>@locationEscaped</div>' +
                     '<div class="popup-row"><i class="bi bi-calendar3"></i>@dateStr</div>' +
-                    '<div class="popup-row"><i class="bi bi-people-fill"></i>@item.RequiredVolunteers volunteer spots</div>' +
+                    '<div class="popup-row"><i class="bi bi-people-fill"></i>@(item.Enrolments?.Count(e => e.Status == volunteerplatform.Models.EnrolmentStatus.Approved) ?? 0)/@item.RequiredVolunteers spots taken</div>' +
                     @if (!string.IsNullOrEmpty(item.RequiredSkills))
                     {
                         <text>'<div class="popup-skills"><i class="bi bi-tools me-1"></i>@skills</div>' +</text>

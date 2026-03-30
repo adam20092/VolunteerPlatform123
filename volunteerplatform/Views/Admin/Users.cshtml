@@ -67,7 +67,7 @@
             var initials = string.IsNullOrEmpty(item.User.FullName) ? "?" : string.Concat(item.User.FullName.Split(' ').Take(2).Select(p => p[0])).ToUpper();
             var roleClass = roleColors.TryGetValue(item.RoleDisplay, out var rc) ? rc : "bg-secondary";
             var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            var canDelete = currentUserId != item.User.Id && !(User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && item.RoleDisplay == "SuperAdmin");
+            var canDelete = currentUserId != item.User.Id;
 
             <div class="col-md-6 col-xl-4 user-card-wrapper" data-role="@item.RoleDisplay" data-searchtext="@item.User.FullName?.ToLower() @item.User.Email?.ToLower() @item.User.Skills?.ToLower() @item.User.Location?.ToLower()">
                 <div class="card border-0 shadow-sm h-100 user-card overflow-hidden">

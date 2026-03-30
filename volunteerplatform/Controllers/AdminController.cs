@@ -53,12 +53,7 @@ namespace volunteerplatform.Controllers
                 return RedirectToAction("Users");
             }
 
-            // 2. Regular Admin cannot delete SuperAdmin
-            if (User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && targetUserViewModel.RoleDisplay == "SuperAdmin")
-            {
-                TempData["Error"] = "You do not have permission to delete a SuperAdmin.";
-                return RedirectToAction("Users");
-            }
+            // Restriction removed to allow admin to manage all users
 
             var success = await _adminService.DeleteUserAsync(userId);
             if (success)

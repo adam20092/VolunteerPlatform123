@@ -15,7 +15,10 @@ namespace volunteerplatform.Services
 
         public async Task<IEnumerable<Initiative>> GetAllInitiativesAsync(string? searchString = null)
         {
-            var initiatives = _context.Initiatives.Include(i => i.Organizer).AsQueryable();
+            var initiatives = _context.Initiatives
+                .Include(i => i.Organizer)
+                .Include(i => i.Enrolments)
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -30,6 +33,7 @@ namespace volunteerplatform.Services
         public async Task<IEnumerable<Initiative>> GetActiveInitiativesWithLocationAsync()
         {
             return await _context.Initiatives
+                .Include(i => i.Enrolments)
                 .Where(i => i.Status == MissionStatus.Active && i.Latitude != null && i.Longitude != null)
                 .ToListAsync();
         }
@@ -54,6 +58,7 @@ namespace volunteerplatform.Services
         public async Task<IEnumerable<Initiative>> GetInitiativesByOrganizerAsync(string organizerId)
         {
             return await _context.Initiatives
+                .Include(i => i.Enrolments)
                 .Where(i => i.OrganizerId == organizerId)
                 .ToListAsync();
         }

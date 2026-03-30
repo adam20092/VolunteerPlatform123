@@ -36,6 +36,16 @@ namespace volunteerplatform.Models
         [ForeignKey("OrganizerId")]
         public ApplicationUser? Organizer { get; set; }
 
+        // Linked Project (Optional)
+        public int? ProjectId { get; set; }
+        [ForeignKey("ProjectId")]
+        public Project? Project { get; set; }
+
+        // Linked Team (Optional)
+        public int? TeamId { get; set; }
+        [ForeignKey("TeamId")]
+        public Team? Team { get; set; }
+
         public ICollection<Enrolment>? Enrolments { get; set; }
 
         // Funding specifics

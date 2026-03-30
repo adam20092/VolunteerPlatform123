@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace volunteerplatform.Models
 {
@@ -16,5 +17,9 @@ namespace volunteerplatform.Models
         // Organizer Specifics
         public string? OrganizationName { get; set; }
         public bool IsVerified { get; set; } = false;
+
+        // Team Relationships
+        public ICollection<TeamMember>? TeamMemberships { get; set; }
+        public ICollection<Team>? LedTeams { get; set; }
     }
 }

@@ -86,7 +86,10 @@
                         }
 
                         <div class="d-flex align-items-center text-muted small mb-4">
-                             <i class="bi bi-people me-2"></i> Needed: @item.RequiredVolunteers
+                             @{
+                                 var approvedCount = item.Enrolments?.Count(e => e.Status == volunteerplatform.Models.EnrolmentStatus.Approved) ?? 0;
+                             }
+                             <i class="bi bi-people me-2"></i> Approved: @approvedCount/@item.RequiredVolunteers
                         </div>
 
                     </div>
