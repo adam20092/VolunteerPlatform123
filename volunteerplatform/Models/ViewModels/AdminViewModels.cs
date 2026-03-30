@@ -10,6 +10,11 @@ namespace volunteerplatform.Models.ViewModels
         public int CompletedMissions { get; set; }
         public int PendingRequests { get; set; }
         public List<ApplicationUser> RecentUsers { get; set; } = new List<ApplicationUser>();
+        
+        // Chart Data
+        public Dictionary<string, int> MissionsByMonth { get; set; } = new Dictionary<string, int>();
+        public Dictionary<string, int> StatusDistribution { get; set; } = new Dictionary<string, int>();
+        public decimal TotalDonations { get; set; }
     }
 
     public class UserAdminViewModel

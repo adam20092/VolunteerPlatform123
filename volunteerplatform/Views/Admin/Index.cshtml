@@ -5,38 +5,69 @@
 }
 
 <div class="container mt-5">
-    <h1 class="display-6 fw-bold mb-4">Admin Dashboard</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6 fw-bold">Admin Dashboard</h1>
+        <div class="card bg-dark text-white border-0 shadow-sm rounded-pill px-4 py-2">
+            <span class="small text-muted me-2">Total Donations:</span>
+            <span class="fw-bold text-success fs-5">@Model.TotalDonations.ToString("C")</span>
+        </div>
+    </div>
 
-    <div class="row mb-4">
+    <div class="row mb-5">
         <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3 shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-people-fill me-2"></i>Volunteers</h5>
-                    <p class="card-text display-4">@Model.TotalVolunteers</p>
+            <div class="card text-white bg-primary mb-3 shadow-sm h-100 border-0 rounded-4">
+                <div class="card-body p-4 text-center">
+                    <div class="display-4 fw-bold">@Model.TotalVolunteers</div>
+                    <div class="text-white-50 small text-uppercase fw-bold">Volunteers</div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-success mb-3 shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-building me-2"></i>Organizers</h5>
-                    <p class="card-text display-4">@Model.TotalOrganizers</p>
+            <div class="card text-white bg-success mb-3 shadow-sm h-100 border-0 rounded-4">
+                <div class="card-body p-4 text-center">
+                    <div class="display-4 fw-bold">@Model.TotalOrganizers</div>
+                    <div class="text-white-50 small text-uppercase fw-bold">Organizers</div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-info mb-3 shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-flag-fill me-2"></i>Missions</h5>
-                    <p class="card-text display-4">@Model.TotalMission</p>
+            <div class="card text-white bg-info mb-3 shadow-sm h-100 border-0 rounded-4">
+                <div class="card-body p-4 text-center">
+                    <div class="display-4 fw-bold">@Model.TotalMission</div>
+                    <div class="text-white-50 small text-uppercase fw-bold">Missions</div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3 shadow-sm h-100">
+            <div class="card text-dark bg-warning mb-3 shadow-sm h-100 border-0 rounded-4">
+                <div class="card-body p-4 text-center">
+                    <div class="display-4 fw-bold">@Model.CompletedMissions</div>
+                    <div class="text-black-50 small text-uppercase fw-bold">Finished</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Statistics Charts *@
+    <div class="row g-4 mb-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0">Mission Activity</h5>
+                    <small class="text-muted">Initiatives created per month</small>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title text-dark"><i class="bi bi-check-circle-fill me-2"></i>Completed</h5>
-                    <p class="card-text display-4 text-dark">@Model.CompletedMissions</p>
+                    <canvas id="missionActivityChart" style="max-height: 350px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0">Mission Status</h5>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <canvas id="statusChart" style="max-height: 350px;"></canvas>
                 </div>
             </div>
         </div>
@@ -45,51 +76,105 @@
     @* Pending Requests Alert *@
     @if (Model.PendingRequests > 0)
     {
-        <div class="alert alert-warning d-flex align-items-center justify-content-between mb-4" role="alert">
+        <div class="alert alert-warning d-flex align-items-center justify-content-between mb-4 border-0 shadow-sm rounded-4" role="alert">
             <div>
                 <i class="bi bi-clock-fill me-2"></i>
                 <strong>@Model.PendingRequests</strong> volunteer request(s) are waiting for review.
             </div>
-            <a asp-action="Requests" class="btn btn-warning btn-sm">Review Now</a>
+            <a asp-action="Requests" class="btn btn-warning btn-sm rounded-pill px-4">Review Now</a>
         </div>
     }
 
-    <div class="row">
+    <div class="row mb-5">
         <div class="col-md-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center py-3 px-4">
                     <span><i class="bi bi-people me-2"></i>Recent Users</span>
-                    <a asp-action="Requests" class="btn btn-primary btn-sm">
-                        <i class="bi bi-clipboard-check me-1"></i>Manage Volunteer Requests
-                        @if (Model.PendingRequests > 0)
-                        {
-                            <span class="badge bg-danger ms-1">@Model.PendingRequests</span>
-                        }
+                    <a asp-action="Requests" class="btn btn-primary btn-sm rounded-pill px-3">
+                        Manage Volunteer Requests
                     </a>
                 </div>
-                <div class="card-body">
-                     <table class="table table-hover">
-                        <thead>
+                <div class="card-body p-0">
+                     <table class="table table-hover mb-0">
+                        <thead class="bg-light">
                             <tr>
-                                <th>Email</th>
+                                <th class="ps-4">Email</th>
                                 <th>Full Name</th>
-                                <th>Id</th>
+                                <th class="pe-4 text-end">ID</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var user in Model.RecentUsers)
                             {
                                 <tr>
-                                    <td>@user.Email</td>
+                                    <td class="ps-4">@user.Email</td>
                                     <td>@user.FullName</td>
-                                    <td><small class="text-muted">@user.Id</small></td>
+                                    <td class="pe-4 text-end"><small class="text-muted">@user.Id</small></td>
                                 </tr>
                             }
                         </tbody>
                     </table>
-                    <a asp-action="Users" class="btn btn-outline-primary w-100">View All Users</a>
                 </div>
             </div>
+            <a asp-action="Users" class="btn btn-outline-primary w-100 mt-3 rounded-pill">View All Users</a>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Activity Chart
+            const activityCtx = document.getElementById('missionActivityChart').getContext('2d');
+            new Chart(activityCtx, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.MissionsByMonth.Keys)),
+                    datasets: [{
+                        label: 'Created Missions',
+                        data: @Html.Raw(Json.Serialize(Model.MissionsByMonth.Values)),
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Status Chart
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.StatusDistribution.Keys)),
+                    datasets: [{
+                        data: @Html.Raw(Json.Serialize(Model.StatusDistribution.Values)),
+                        backgroundColor: ['#0dcaf0', '#ffc107', '#198754'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                    },
+                    cutout: '70%'
+                }
+            });
+        });
+    </script>
+}

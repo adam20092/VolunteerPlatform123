@@ -26,14 +26,27 @@ namespace volunteerplatform.Services
 
         public async Task<AdminDashboardViewModel> GetDashboardStatsAsync()
         {
+            var missions = await _context.Initiatives.ToListAsync();
+            var months = missions
+                .GroupBy(m => m.DateAndTime.ToString("MMM yyyy"))
+                .OrderBy(g => g.Min(m => m.DateAndTime))
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var statuses = missions
+                .GroupBy(m => m.Status.ToString())
+                .ToDictionary(g => g.Key, g => g.Count());
+
             return new AdminDashboardViewModel
             {
                 TotalVolunteers = (await _userManager.GetUsersInRoleAsync("Volunteer")).Count,
                 TotalOrganizers = (await _userManager.GetUsersInRoleAsync("Organizer")).Count,
-                TotalMission = await _context.Initiatives.CountAsync(),
-                CompletedMissions = await _context.Initiatives.CountAsync(i => i.Status == MissionStatus.Finished),
+                TotalMission = missions.Count,
+                CompletedMissions = missions.Count(i => i.Status == MissionStatus.Finished),
                 PendingRequests = await _context.Enrolments.CountAsync(e => e.Status == EnrolmentStatus.Pending),
-                RecentUsers = await _userManager.Users.OrderByDescending(u => u.Id).Take(5).ToListAsync()
+                RecentUsers = await _userManager.Users.OrderByDescending(u => u.Id).Take(5).ToListAsync(),
+                MissionsByMonth = months,
+                StatusDistribution = statuses,
+                TotalDonations = await _context.Donations.SumAsync(d => d.Amount)
             };
         }
 
