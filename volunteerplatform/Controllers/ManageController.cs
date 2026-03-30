@@ -99,5 +99,31 @@ namespace volunteerplatform.Controllers
             var model = await _achievementService.GetAchievementsAsync(userId);
             return View(model);
         }
+        [HttpGet]
+        public async Task<IActionResult> DownloadPersonalData()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return NotFound();
+
+            var data = await _userProfileService.GetPersonalDataAsync(userId);
+            return File(data, "application/json", "PersonalData.json");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return NotFound();
+
+            var success = await _userProfileService.DeleteAccountAsync(userId);
+            if (!success)
+            {
+                StatusMessage = "Error: Could not delete your account.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return Redirect("~/");
+        }
     }
 }

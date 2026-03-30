@@ -8,13 +8,19 @@ namespace volunteerplatform.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IAdminService _adminService;
+        private readonly Data.ApplicationDbContext _context;
 
         public UserProfileService(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IAdminService adminService,
+            Data.ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _adminService = adminService;
+            _context = context;
         }
 
         public async Task<IndexViewModel?> GetProfileAsync(string userId)
@@ -71,6 +77,42 @@ namespace volunteerplatform.Services
             }
 
             return result;
+        }
+
+        public async Task<byte[]> GetPersonalDataAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return Array.Empty<byte>();
+
+            var personalData = new Dictionary<string, string>
+            {
+                { "UserId", user.Id },
+                { "UserName", user.UserName ?? "" },
+                { "Email", user.Email ?? "" },
+                { "FullName", user.FullName ?? "" },
+                { "PhoneNumber", user.PhoneNumber ?? "" },
+                { "Age", user.Age?.ToString() ?? "" },
+                { "Location", user.Location ?? "" },
+                { "Skills", user.Skills ?? "" },
+                { "OrganizationName", user.OrganizationName ?? "" }
+            };
+
+            // Add some activity stats
+            var missionsCompleted = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.CountAsync(_context.Enrolments.Where(e => e.VolunteerId == userId && e.Status == EnrolmentStatus.Approved));
+            personalData.Add("MissionsCompleted", missionsCompleted.ToString());
+
+            var json = System.Text.Json.JsonSerializer.Serialize(personalData, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            return System.Text.Encoding.UTF8.GetBytes(json);
+        }
+
+        public async Task<bool> DeleteAccountAsync(string userId)
+        {
+            var success = await _adminService.DeleteUserAsync(userId);
+            if (success)
+            {
+                await _signInManager.SignOutAsync();
+            }
+            return success;
         }
     }
 }

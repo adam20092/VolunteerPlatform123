@@ -9,5 +9,7 @@ namespace volunteerplatform.Services
         Task<IndexViewModel?> GetProfileAsync(string userId);
         Task<IdentityResult> UpdateProfileAsync(string userId, IndexViewModel model);
         Task<IdentityResult> ChangePasswordAsync(string userId, string oldPassword, string newPassword);
+        Task<byte[]> GetPersonalDataAsync(string userId);
+        Task<bool> DeleteAccountAsync(string userId);
     }
 }
