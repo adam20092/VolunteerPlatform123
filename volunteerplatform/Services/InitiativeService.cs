@@ -7,10 +7,17 @@ namespace volunteerplatform.Services
     public class InitiativeService : IInitiativeService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailService _emailService;
+        private readonly Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> _userManager;
 
-        public InitiativeService(ApplicationDbContext context)
+        public InitiativeService(
+            ApplicationDbContext context, 
+            IEmailService emailService,
+            Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _emailService = emailService;
+            _userManager = userManager;
         }
 
         public async Task<IEnumerable<Initiative>> GetAllInitiativesAsync(string? searchString = null)
@@ -52,6 +59,25 @@ namespace volunteerplatform.Services
             initiative.Status = MissionStatus.Active;
             _context.Add(initiative);
             await _context.SaveChangesAsync();
+
+            // Notify volunteers in the same location
+            if (!string.IsNullOrEmpty(initiative.Location))
+            {
+                var volunteersInLocation = await _userManager.GetUsersInRoleAsync("Volunteer");
+                var relevantVolunteers = volunteersInLocation
+                    .Where(v => v.Location != null && v.Location.Contains(initiative.Location, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                foreach (var volunteer in relevantVolunteers)
+                {
+                    await _emailService.SendNewInitiativeNotificationAsync(
+                        volunteer.Email!,
+                        volunteer.FullName!,
+                        initiative.Title!,
+                        initiative.Location);
+                }
+            }
+
             return initiative;
         }
 

@@ -7,10 +7,12 @@ namespace volunteerplatform.Services
     public class EnrolmentService : IEnrolmentService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public EnrolmentService(ApplicationDbContext context)
+        public EnrolmentService(ApplicationDbContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         public async Task<bool> ApplyAsync(int initiativeId, string volunteerId)
@@ -51,11 +53,29 @@ namespace volunteerplatform.Services
 
         public async Task<bool> UpdateStatusAsync(int enrolmentId, EnrolmentStatus status)
         {
-            var enrolment = await _context.Enrolments.FindAsync(enrolmentId);
+            var enrolment = await _context.Enrolments
+                .Include(e => e.Volunteer)
+                .Include(e => e.Initiative)
+                .FirstOrDefaultAsync(e => e.Id == enrolmentId);
+
             if (enrolment == null) return false;
 
+            var oldStatus = enrolment.Status;
             enrolment.Status = status;
             await _context.SaveChangesAsync();
+
+            // Send email if approved
+            if (status == EnrolmentStatus.Approved && oldStatus != EnrolmentStatus.Approved)
+            {
+                if (enrolment.Volunteer != null && enrolment.Initiative != null)
+                {
+                    await _emailService.SendVolunteerApprovalEmailAsync(
+                        enrolment.Volunteer.Email!, 
+                        enrolment.Volunteer.FullName!, 
+                        enrolment.Initiative.Title!);
+                }
+            }
+
             return true;
         }
 
