@@ -1,0 +1,8 @@
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\VolunteerPlatform.Tests\bin\Debug\net10.0\.msCoverageSourceRootsMapping_VolunteerPlatform.Tests
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\VolunteerPlatform.Tests\bin\Debug\net10.0\CoverletSourceRootsMapping_VolunteerPlatform.Tests
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\VolunteerPlatform.Tests\obj\Debug\net10.0\VolunteerPlatform.Tests.csproj.AssemblyReference.cache
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\VolunteerPlatform.Tests\obj\Debug\net10.0\VolunteerPlatform.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\VolunteerPlatform.Tests\obj\Debug\net10.0\VolunteerPlatform.Tests.AssemblyInfoInputs.cache
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\VolunteerPlatform.Tests\obj\Debug\net10.0\VolunteerPlatform.Tests.AssemblyInfo.cs
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\VolunteerPlatform.Tests\obj\Debug\net10.0\VolunteerPlatform.Tests.csproj.CoreCompileInputs.cache
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\VolunteerPlatform.Tests\obj\Debug\net10.0\VolunteerPlatform.Tests.sourcelink.json
