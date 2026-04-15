@@ -52,5 +52,6 @@ namespace volunteerplatform.Models
         public decimal? TargetAmount { get; set; }
         public decimal CurrentAmount { get; set; } = 0;
         public ICollection<Donation>? Donations { get; set; }
+        public ICollection<MissionTask>? Tasks { get; set; }
     }
 }

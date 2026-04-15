@@ -13,86 +13,108 @@
     bool hasSkillMatch = !requiredSkills.Any() || matchedSkills.Any();
 }
 
-<div class="container mt-5">
-    
-    <div class="row">
-        <div class="col-lg-8">
-            <h1 class="display-5 fw-bold mb-3">@Model.Title</h1>
+            </div>
             
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                 <div class="d-flex gap-3">
-                    <span class="badge bg-primary px-3 py-2">@Model.Status</span>
-                    <span class="text-muted"><i class="bi bi-clock me-1"></i> @Model.DateAndTime.ToString("f")</span>
-                 </div>
-                 @if(Model.Organizer != null) {
-                    <div class="d-flex align-items-center">
-                         <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center me-2" style="width: 40px; height: 40px;">
-                             @Model.Organizer.FullName?.Substring(0,1)
-                         </div>
-                         <div>
-                             <small class="d-block text-muted line-height-1">Organized by</small>
-                             <span class="fw-bold">@Model.Organizer.FullName</span>
-                         </div>
+            <hr class="my-5" />
+
+            @* Task Tracking Section *@
+            <h4 class="fw-bold mb-4"><i class="bi bi-list-task me-2 text-primary"></i>Mission Tasks</h4>
+
+            @{
+                bool isOrganizerOrAdmin = (Model.OrganizerId == currentUser?.Id) || User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
+                bool isApproved = Model.Enrolments?.Any(e => e.VolunteerId == currentUser?.Id && e.Status == volunteerplatform.Models.EnrolmentStatus.Approved) ?? false;
+            }
+
+            @if (isOrganizerOrAdmin)
+            {
+                <form asp-controller="Tasks" asp-action="Create" method="post" class="mb-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="initiativeId" value="@Model.Id" />
+                    <div class="input-group">
+                        <input type="text" name="title" class="form-control" placeholder="New Task (e.g. Water bottles)" required />
+                        <button class="btn btn-primary" type="submit">Add Task</button>
                     </div>
-                 }
-            </div>
+                </form>
+            }
 
-            <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-                 class="img-fluid rounded-3 shadow-sm mb-5 w-100" alt="Initiative Cover" style="max-height: 400px; object-fit: cover;">
-
-
-            <h4 class="fw-bold mb-3">About the Mission</h4>
-            <p class="lead mb-5 text-secondary">
-                @Model.Description
-            </p>
-
-            <h4 class="fw-bold mb-3">Requirements</h4>
-            <div class="mb-3">
-                <i class="bi bi-people me-2 text-primary"></i>
-                @{
-                    var approvedCount = Model.Enrolments?.Count(e => e.Status == volunteerplatform.Models.EnrolmentStatus.Approved) ?? 0;
-                }
-                <strong>@approvedCount/@Model.RequiredVolunteers</strong> Volunteers Approved
-            </div>
-            <div class="mb-5">
-                <i class="bi bi-stars me-2 text-primary"></i>
-                <strong class="me-2">Required Skills:</strong>
-                @if (!requiredSkills.Any())
+            <div class="list-group list-group-flush shadow-sm rounded-3 mb-5 border">
+                @if (Model.Tasks == null || !Model.Tasks.Any())
                 {
-                    <span class="badge bg-secondary rounded-pill">No special skills required</span>
+                    <div class="list-group-item text-center py-4 text-muted">
+                        No tasks added for this mission yet.
+                    </div>
                 }
                 else
                 {
-                    foreach (var skill in requiredSkills)
+                    foreach (var task in Model.Tasks)
                     {
-                        bool matched = isVolunteer && matchedSkills.Any(m => m.Equals(skill, StringComparison.OrdinalIgnoreCase));
-                        <span class="badge rounded-pill me-1 mb-1 @(matched ? "bg-success" : "bg-primary")">
-                            @if (matched) { <i class="bi bi-check-lg me-1"></i> }
-                            @skill
-                        </span>
+                        <div class="list-group-item d-flex align-items-center justify-content-between py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input task-toggle" type="checkbox" 
+                                           data-id="@task.Id" 
+                                           @(task.IsCompleted ? "checked" : "") 
+                                           @(!isOrganizerOrAdmin && !isApproved ? "disabled" : "") />
+                                </div>
+                                <div class="@(task.IsCompleted ? "text-decoration-line-through text-muted" : "")" id="task-title-@task.Id">
+                                    <span class="fw-bold">@task.Title</span>
+                                    @if (task.IsCompleted && task.CompletedAt.HasValue)
+                                    {
+                                        <div class="small text-muted">Completed on @task.CompletedAt.Value.ToString("g")</div>
+                                    }
+                                </div>
+                            </div>
+                            @if (isOrganizerOrAdmin)
+                            {
+                                <form asp-controller="Tasks" asp-action="Delete" asp-route-id="@task.Id" method="post" class="ms-3">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-link text-danger p-0" onclick="return confirm('Delete task?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            }
+                        </div>
                     }
                 }
             </div>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const checkboxes = document.querySelectorAll('.task-toggle');
+                    checkboxes.forEach(cb => {
+                        cb.addEventListener('change', async function() {
+                            const taskId = this.dataset.id;
+                            const titleEl = document.getElementById('task-title-' + taskId);
+                            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-            @if (isVolunteer && requiredSkills.Any())
-            {
-                <div class="alert @(hasSkillMatch ? "alert-success" : "alert-warning") d-flex align-items-center rounded-3 mb-5" role="alert">
-                    <i class="bi @(hasSkillMatch ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") fs-4 me-3"></i>
-                    <div>
-                        @if (hasSkillMatch)
-                        {
-                            <strong>You match @matchedSkills.Count of @requiredSkills.Length required skills!</strong>
-                            <div class="small mt-1">Matched: @string.Join(", ", matchedSkills)</div>
-                        }
-                        else
-                        {
-                            <strong>Your skills don't fully match this mission's requirements.</strong>
-                            <div class="small mt-1">Required: @string.Join(", ", requiredSkills) — you must match at least one to apply!</div>
-                        }
-                    </div>
-                </div>
-            }
+                            try {
+                                const response = await fetch('/Tasks/Toggle/' + taskId, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest',
+                                        'RequestVerificationToken': token
+                                    }
+                                });
 
+                                if (response.ok) {
+                                    const result = await response.json();
+                                    if(result.isCompleted) {
+                                        titleEl.classList.add('text-decoration-line-through', 'text-muted');
+                                    } else {
+                                        titleEl.classList.remove('text-decoration-line-through', 'text-muted');
+                                    }
+                                } else {
+                                    this.checked = !this.checked; // Revert
+                                    alert('Error updating task status.');
+                                }
+                            } catch (err) {
+                                this.checked = !this.checked;
+                                alert('Connection error.');
+                            }
+                        });
+                    });
+                });
+            </script>
         </div>
         
         <div class="col-lg-4 mt-4 mt-lg-0">

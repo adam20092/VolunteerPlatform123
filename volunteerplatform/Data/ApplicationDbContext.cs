@@ -18,6 +18,7 @@ namespace volunteerplatform.Data
         public DbSet<Project> Projects { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamMember> TeamMembers { get; set; }
+        public DbSet<MissionTask> MissionTasks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -40,6 +41,12 @@ namespace volunteerplatform.Data
                 .WithMany()
                 .HasForeignKey(r => r.VolunteerId)
                 .OnDelete(DeleteBehavior.NoAction); 
+
+            builder.Entity<MissionTask>()
+                .HasOne(t => t.Initiative)
+                .WithMany(i => i.Tasks)
+                .HasForeignKey(t => t.InitiativeId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

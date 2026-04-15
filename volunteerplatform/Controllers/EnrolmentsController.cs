@@ -12,15 +12,18 @@ namespace volunteerplatform.Controllers
         private readonly IEnrolmentService _enrolmentService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IInitiativeService _initiativeService;
+        private readonly IReportService _reportService;
 
         public EnrolmentsController(
             IEnrolmentService enrolmentService, 
             UserManager<ApplicationUser> userManager,
-            IInitiativeService initiativeService)
+            IInitiativeService initiativeService,
+            IReportService reportService)
         {
             _enrolmentService = enrolmentService;
             _userManager = userManager;
             _initiativeService = initiativeService;
+            _reportService = reportService;
         }
 
         // POST: Enrolments/Apply/5
@@ -151,6 +154,31 @@ namespace volunteerplatform.Controllers
             await _enrolmentService.EnsureCertificateCodeAsync(id);
 
             return View(enrolment);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DownloadCertificate(int id)
+        {
+            var enrolment = await _enrolmentService.GetEnrolmentByIdAsync(id);
+            if (enrolment == null || enrolment.Initiative == null || enrolment.Volunteer == null) return NotFound();
+
+            if (enrolment.Initiative.Status != MissionStatus.Finished)
+            {
+                TempData["Error"] = "Certificate is only available for finished missions.";
+                return RedirectToAction("MyApplications");
+            }
+
+            var code = await _enrolmentService.EnsureCertificateCodeAsync(id);
+            var html = await _reportService.GenerateCertificateHtmlAsync(
+                enrolment.Volunteer.FullName!,
+                enrolment.Initiative.Title!,
+                enrolment.Initiative.DateAndTime.ToString("MMMM dd, yyyy"),
+                code
+            );
+
+            // We return HTML as a file, and the browser can print it to PDF
+            // This avoids heavy PDF libraries and works perfectly for a demo
+            var data = System.Text.Encoding.UTF8.GetBytes(html);
+            return File(data, "text/html", $"Certificate_{enrolment.Id}.html");
         }
     }
 }

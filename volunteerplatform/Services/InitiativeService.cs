@@ -49,6 +49,7 @@ namespace volunteerplatform.Services
         {
             return await _context.Initiatives
                 .Include(i => i.Organizer)
+                .Include(i => i.Tasks!)
                 .Include(i => i.Enrolments!).ThenInclude(e => e.Volunteer)
                 .FirstOrDefaultAsync(m => m.Id == id);
         }

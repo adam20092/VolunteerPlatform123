@@ -8,10 +8,12 @@ namespace volunteerplatform.Controllers
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;
+        private readonly IReportService _reportService;
 
-        public AdminController(IAdminService adminService)
+        public AdminController(IAdminService adminService, IReportService reportService)
         {
             _adminService = adminService;
+            _reportService = reportService;
         }
 
         public async Task<IActionResult> Index()
@@ -66,6 +68,13 @@ namespace volunteerplatform.Controllers
             }
 
             return RedirectToAction("Users");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExportInitiatives()
+        {
+            var data = await _reportService.GenerateInitiativesCsvAsync();
+            return File(data, "text/csv", $"Initiatives_Report_{DateTime.Now:yyyyMMdd}.csv");
         }
     }
 }
