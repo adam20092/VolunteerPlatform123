@@ -1,0 +1,92 @@
+@{
+    ViewData["Title"] = "Mission Calendar";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary">Mission Calendar</h1>
+        <p class="lead text-muted">Plan your volunteering journey with our interactive schedule</p>
+    </div>
+
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white p-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex gap-3">
+                    <span class="badge bg-primary px-3 rounded-pill"><i class="bi bi-circle-fill me-1 tiny"></i> Active</span>
+                    <span class="badge bg-warning text-dark px-3 rounded-pill"><i class="bi bi-circle-fill me-1 tiny"></i> Filled</span>
+                    <span class="badge bg-secondary px-3 rounded-pill"><i class="bi bi-circle-fill me-1 tiny"></i> Finished</span>
+                </div>
+                <div class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i> Click on a mission to see details
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4 bg-light">
+            <div id="calendar" class="p-2 bg-white rounded-3 shadow-sm"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- FullCalendar JS/CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    
+    <style>
+        #calendar {
+            min-height: 700px;
+        }
+        .fc-event {
+            cursor: pointer;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: transform 0.2s;
+        }
+        .fc-event:hover {
+            transform: scale(1.02);
+            z-index: 100;
+        }
+        .fc-toolbar-title {
+            font-weight: 700 !important;
+            color: #0d6efd;
+            text-transform: capitalize;
+        }
+        .fc-button-primary {
+            background-color: #0d6efd !important;
+            border-color: #0d6efd !important;
+        }
+        .tiny { font-size: 0.5rem; }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listMonth'
+                },
+                themeSystem: 'bootstrap5',
+                events: '@Url.Action("GetEventsApi", "Initiatives")',
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: false,
+                    hour12: false
+                },
+                locale: 'en',
+                firstDay: 1, // Monday
+                nowIndicator: true,
+                selectable: true,
+                eventClick: function(info) {
+                    if (info.event.url) {
+                        return true; // Use default behavior
+                    }
+                }
+            });
+            calendar.render();
+        });
+    </script>
+}

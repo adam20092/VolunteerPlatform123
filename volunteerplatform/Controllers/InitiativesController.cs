@@ -32,6 +32,31 @@ namespace volunteerplatform.Controllers
             return View(initiatives);
         }
 
+        // GET: Initiatives/Calendar
+        public IActionResult Calendar()
+        {
+            return View();
+        }
+
+        // GET: Initiatives/GetEventsApi
+        [HttpGet]
+        public async Task<IActionResult> GetEventsApi()
+        {
+            var initiatives = await _initiativeService.GetAllInitiativesAsync(null);
+            var events = initiatives.Select(i => new
+            {
+                id = i.Id,
+                title = i.Title,
+                start = i.DateAndTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+                url = Url.Action("Details", new { id = i.Id }),
+                backgroundColor = i.Status == MissionStatus.Finished ? "#6c757d" : (i.Status == MissionStatus.Filled ? "#ffc107" : "#0d6efd"),
+                borderColor = "transparent",
+                allDay = false
+            });
+
+            return Json(events);
+        }
+
         // GET: Initiatives/Details/5
         public async Task<IActionResult> Details(int? id)
         {
