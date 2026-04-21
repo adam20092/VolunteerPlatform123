@@ -1,0 +1,83 @@
+@model IEnumerable<volunteerplatform.Models.Team>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Volunteer Teams";
+    var currentUserId = UserManager.GetUserId(User);
+}
+
+<div class="container mt-5">
+    <div class="row align-items-center mb-5">
+        <div class="col-md-8">
+            <h1 class="display-4 fw-bold">Volunteer Teams</h1>
+            <p class="lead text-muted">Join a specialized team to make a bigger impact together.</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            @if (User.IsInRole("Organizer") || User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+            {
+                <a asp-action="Create" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                    <i class="bi bi-plus-circle me-2"></i>Create Team
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="row g-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-people text-muted display-1"></i>
+                <h3 class="mt-3">No teams found</h3>
+                <p>Be the first to start a movement!</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var team in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0 hover-lift transition">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-3">
+                                    <i class="bi bi-people-fill text-primary fs-3"></i>
+                                </div>
+                                <span class="badge bg-light text-muted rounded-pill">
+                                    @team.Members?.Count Members
+                                </span>
+                            </div>
+                            
+                            <h4 class="fw-bold mb-3">@team.Name</h4>
+                            <p class="text-muted small mb-4">
+                                @(team.Description?.Length > 120 ? team.Description.Substring(0, 117) + "..." : team.Description)
+                            </p>
+
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center me-2" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                    @team.Leader?.FullName?.Substring(0,1)
+                                </div>
+                                <div class="small">
+                                    <span class="text-muted">Leader:</span> <strong>@team.Leader?.FullName</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                            <div class="d-grid">
+                                <a asp-action="Details" asp-route-id="@team.Id" class="btn btn-outline-primary rounded-pill">View Team Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
+    }
+    .transition { transition: all 0.3s ease; }
+</style>

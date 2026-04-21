@@ -26,6 +26,7 @@ builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IAchievementService, AchievementService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<ITeamService, TeamService>();
 
 builder.Services.AddControllersWithViews();
 

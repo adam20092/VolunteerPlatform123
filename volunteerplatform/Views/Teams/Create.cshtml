@@ -1,0 +1,47 @@
+@model volunteerplatform.Models.Team
+
+@{
+    ViewData["Title"] = "Create Team";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="bg-primary p-5 text-center text-white">
+                    <i class="bi bi-people-fill display-1 mb-3"></i>
+                    <h2 class="fw-bold">Start a New Team</h2>
+                    <p class="mb-0 opacity-75">Gather volunteers for a common cause.</p>
+                </div>
+                <div class="card-body p-5">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label fw-bold">Team Name</label>
+                            <input asp-for="Name" class="form-control form-control-lg" placeholder="e.g. Eco Warriors" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label fw-bold">Mission / Vision</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="What is this team trying to achieve?"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow">
+                                Create Team
+                            </button>
+                            <a asp-action="Index" class="btn btn-link text-muted mt-2">Back to Teams</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
