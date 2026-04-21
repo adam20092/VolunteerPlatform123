@@ -18,10 +18,18 @@ namespace volunteerplatform.Controllers
         }
 
         // GET: Initiatives
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index(string searchString, string category, string region)
         {
             ViewData["CurrentFilter"] = searchString;
-            var initiatives = await _initiativeService.GetAllInitiativesAsync(searchString);
+            ViewData["CurrentCategory"] = category;
+            ViewData["CurrentRegion"] = region;
+
+            var initiatives = await _initiativeService.GetAllInitiativesAsync(searchString, category, region);
+
+            // Populate filter options
+            ViewBag.Categories = new List<string> { "Environment", "Education", "Health", "Social", "Animal Welfare", "Other" };
+            ViewBag.Regions = new List<string> { "Sofia", "Plovdiv", "Varna", "Burgas", "Ruse", "Stara Zagora", "Other" };
+
             return View(initiatives);
         }
 

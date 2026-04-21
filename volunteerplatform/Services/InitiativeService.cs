@@ -20,7 +20,7 @@ namespace volunteerplatform.Services
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<Initiative>> GetAllInitiativesAsync(string? searchString = null)
+        public async Task<IEnumerable<Initiative>> GetAllInitiativesAsync(string? searchString = null, string? category = null, string? region = null)
         {
             var initiatives = _context.Initiatives
                 .Include(i => i.Organizer)
@@ -34,7 +34,17 @@ namespace volunteerplatform.Services
                                                || s.Description!.Contains(searchString));
             }
 
-            return await initiatives.ToListAsync();
+            if (!string.IsNullOrEmpty(category))
+            {
+                initiatives = initiatives.Where(i => i.Category == category);
+            }
+
+            if (!string.IsNullOrEmpty(region))
+            {
+                initiatives = initiatives.Where(i => i.Region == region);
+            }
+
+            return await initiatives.OrderByDescending(i => i.DateAndTime).ToListAsync();
         }
 
         public async Task<IEnumerable<Initiative>> GetActiveInitiativesWithLocationAsync()

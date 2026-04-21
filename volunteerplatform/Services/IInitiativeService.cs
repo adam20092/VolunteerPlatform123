@@ -4,7 +4,7 @@ namespace volunteerplatform.Services
 {
     public interface IInitiativeService
     {
-        Task<IEnumerable<Initiative>> GetAllInitiativesAsync(string? searchString = null);
+        Task<IEnumerable<Initiative>> GetAllInitiativesAsync(string? searchString = null, string? category = null, string? region = null);
         Task<IEnumerable<Initiative>> GetActiveInitiativesWithLocationAsync();
         Task<Initiative?> GetInitiativeByIdAsync(int id);
         Task<Initiative> CreateInitiativeAsync(Initiative initiative, string organizerId);

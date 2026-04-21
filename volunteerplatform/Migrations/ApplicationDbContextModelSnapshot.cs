@@ -317,6 +317,9 @@ namespace volunteerplatform.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("CurrentAmount")
                         .HasColumnType("decimal(18,2)");
 
@@ -340,6 +343,9 @@ namespace volunteerplatform.Migrations
 
                     b.Property<int?>("ProjectId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequiredSkills")
                         .HasColumnType("nvarchar(max)");

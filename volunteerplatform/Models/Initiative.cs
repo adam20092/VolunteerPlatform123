@@ -19,6 +19,9 @@ namespace volunteerplatform.Models
 
         public string? Description { get; set; }
 
+        public string? Category { get; set; } // e.g. "Environment", "Education", "Health"
+        public string? Region { get; set; } // e.g. "Sofia", "Plovdiv", "Varna"
+
         public string? Location { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
