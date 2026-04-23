@@ -236,6 +236,44 @@ namespace volunteerplatform.Data
                 {
                     await UpdateRating(userManager, vol.Id, context);
                 }
+
+                // ─── 5. SEED TEAMS ───────────────────────────────────────────────────────
+                if (!context.Teams.Any())
+                {
+                    var teamTemplates = new[] {
+                        new { Name = "Eco Warriors", Desc = "Specialized in park restoration and mountain cleaning." },
+                        new { Name = "Digital Tutors", Desc = "Tech-savvy volunteers teaching elderly people how to use devices." },
+                        new { Name = "Paws & Hearts", Desc = "Dedicated animal lover team supporting local shelters." },
+                        new { Name = "Crisis Response", Desc = "Heavy lifters and first-aid certified rapid response team." }
+                    };
+
+                    foreach (var tt in teamTemplates)
+                    {
+                        var team = new Team
+                        {
+                            Name = tt.Name,
+                            Description = tt.Desc,
+                            CreatedAt = DateTime.Now.AddMonths(-2),
+                            LeaderId = admin.Id
+                        };
+                        context.Teams.Add(team);
+                        await context.SaveChangesAsync();
+
+                        // Add some random volunteers to the team
+                        var randomMembers = volunteers.OrderBy(_ => random.Next()).Take(5).ToList();
+                        foreach (var m in randomMembers)
+                        {
+                            context.TeamMembers.Add(new TeamMember
+                            {
+                                TeamId = team.Id,
+                                MemberId = m.Id,
+                                JoinedAt = DateTime.Now.AddDays(-random.Next(1, 40)),
+                                Role = "General Volunteer"
+                            });
+                        }
+                    }
+                    await context.SaveChangesAsync();
+                }
             }
         }
 

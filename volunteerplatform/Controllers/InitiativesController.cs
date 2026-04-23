@@ -25,10 +25,11 @@ namespace volunteerplatform.Controllers
             ViewData["CurrentRegion"] = region;
 
             var initiatives = await _initiativeService.GetAllInitiativesAsync(searchString, category, region);
+            var allInitiatives = await _initiativeService.GetAllInitiativesAsync();
 
-            // Populate filter options
-            ViewBag.Categories = new List<string> { "Environment", "Education", "Health", "Social", "Animal Welfare", "Other" };
-            ViewBag.Regions = new List<string> { "Sofia", "Plovdiv", "Varna", "Burgas", "Ruse", "Stara Zagora", "Other" };
+            // Populate filter options dynamically
+            ViewBag.Categories = allInitiatives.Select(i => i.Category).Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(c => c).ToList();
+            ViewBag.Regions = allInitiatives.Select(i => i.Region).Where(r => !string.IsNullOrEmpty(r)).Distinct().OrderBy(r => r).ToList();
 
             return View(initiatives);
         }
