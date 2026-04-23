@@ -88,7 +88,7 @@ namespace volunteerplatform.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,Location,Latitude,Longitude,DateAndTime,RequiredVolunteers,RequiredSkills")] Initiative initiative)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,Category,Region,Location,Latitude,Longitude,DateAndTime,RequiredVolunteers,RequiredSkills")] Initiative initiative)
         {
             if (ModelState.IsValid)
             {

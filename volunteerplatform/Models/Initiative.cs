@@ -56,5 +56,16 @@ namespace volunteerplatform.Models
         public decimal CurrentAmount { get; set; } = 0;
         public ICollection<Donation>? Donations { get; set; }
         public ICollection<MissionTask>? Tasks { get; set; }
+
+        [NotMapped]
+        public string StatusColor => Status switch
+        {
+            MissionStatus.Finished => "bg-secondary",
+            MissionStatus.Filled => "bg-warning text-dark",
+            _ => "bg-primary"
+        };
+
+        [NotMapped]
+        public string OrganizerFullName => Organizer?.FullName ?? "Unknown Organizer";
     }
 }

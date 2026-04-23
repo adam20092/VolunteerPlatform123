@@ -2,15 +2,21 @@
 @{
     ViewData["Title"] = "Mission Map Discovery";
     Layout = "_Layout";
+    ViewData["HideLayout"] = true; // Initially hide for full-screen focus
 }
 
 <style>
     /* ── Page layout ─────────────────────────────────── */
     .map-page-wrapper {
         display: flex;
-        height: calc(100vh - 72px);
+        height: 100vh;
         overflow: hidden;
-        position: relative;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 2000;
+        background: var(--card-bg);
     }
 
     /* ── Sidebar ─────────────────────────────────────── */
@@ -310,6 +316,29 @@
 
         .sidebar-toggle-btn { display: flex; align-items: center; justify-content: center; }
     }
+
+    /* ── Exit full screen button ────────────────────── */
+    .exit-map-btn {
+        position: absolute;
+        top: 1rem;
+        right: 4.5rem;
+        z-index: 600;
+        background: rgba(255,255,255,0.9);
+        color: #333;
+        border: none;
+        border-radius: 50px;
+        padding: 0.5rem 1rem;
+        font-weight: 700;
+        font-size: 0.8rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+    }
+    [data-theme='dark'] .exit-map-btn { background: #111; color: #fff; border: 1px solid #333; }
+    .exit-map-btn:hover { background: #fff; transform: translateY(-2px); }
 </style>
 
 <div class="map-page-wrapper" id="mapWrapper">
@@ -389,6 +418,11 @@
     <!-- Map -->
     <div style="position:relative; flex:1; height:100%;">
 
+        <!-- Exit Button -->
+        <button class="exit-map-btn" onclick="window.location.href='/Initiatives/Index'">
+            <i class="bi bi-arrow-left"></i> Back to Platform
+        </button>
+
         <!-- Mobile sidebar toggle -->
         <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Toggle mission list">
             <i class="bi bi-list" id="sidebarToggleIcon"></i>
@@ -407,6 +441,15 @@
 
 @section Scripts {
 <script>
+    // Hide header and footer from parent layout via CSS
+    document.addEventListener('DOMContentLoaded', function() {
+        const header = document.querySelector('header');
+        const footer = document.querySelector('footer');
+        if (header) header.style.display = 'none';
+        if (footer) footer.style.display = 'none';
+        document.body.style.overflow = 'hidden';
+    });
+
 (function () {
     // ── Custom marker icon ──────────────────────────────────────────────────
     function makeIcon(color) {

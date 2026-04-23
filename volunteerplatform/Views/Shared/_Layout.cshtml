@@ -69,7 +69,7 @@
         </nav>
     </header>
     
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3 @(ViewData["HideLayout"] != null ? "p-0 m-0" : "")">
             @RenderBody()
         </main>
 
