@@ -57,7 +57,19 @@ using (var scope = app.Services.CreateScope())
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         var context = services.GetRequiredService<ApplicationDbContext>();
-        context.Database.Migrate();
+        
+        var envDbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+        if (!string.IsNullOrEmpty(envDbUrl))
+        {
+            // На Render (PostgreSQL) използваме EnsureCreated, защото 
+            // съществуващите миграции са специфични за SQL Server.
+            context.Database.EnsureCreated();
+        }
+        else
+        {
+            // Локално (SQL Server) използваме миграциите.
+            context.Database.Migrate();
+        }
         await DbInitializer.Initialize(services, userManager, roleManager);
     }
     catch (Exception ex)
