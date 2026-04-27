@@ -1,0 +1,13 @@
+**/.git
+**/.github
+**/.vscode
+**/bin
+**/obj
+**/out
+**/.vs
+**/.gemini
+**/node_modules
+.dockerignore
+Dockerfile
+*.ps1
+*.md
