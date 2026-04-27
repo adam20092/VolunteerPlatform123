@@ -158,7 +158,6 @@ C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerp
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Release\net10.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Release\net10.0\scopedcss\bundle\volunteerplatform.styles.css
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Release\net10.0\scopedcss\projectbundle\volunteerplatform.bundle.scp.css
-C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Release\net10.0\compressed\p7ve04l8bg-{0}-khdnqo8wgm-khdnqo8wgm.gz
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Release\net10.0\compressed\9punnbj1w3-{0}-61n19gt1b8-61n19gt1b8.gz
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Release\net10.0\compressed\jxcxtc8y7x-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Release\net10.0\compressed\qe39ad5x6h-{0}-bqjiyaj88i-bqjiyaj88i.gz
@@ -239,3 +238,13 @@ C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerp
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Release\net10.0\publish\volunteerplatform.deps.json
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Release\net10.0\publish\volunteerplatform.runtimeconfig.json
 C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Release\net10.0\publish\volunteerplatform.staticwebassets.endpoints.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Release\net10.0\publish\publish\web.config
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Release\net10.0\publish\publish\appsettings.Development.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Release\net10.0\publish\publish\appsettings.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Release\net10.0\publish\publish\volunteerplatform.deps.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Release\net10.0\publish\publish\volunteerplatform.runtimeconfig.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Release\net10.0\publish\publish\volunteerplatform.staticwebassets.endpoints.json
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Release\net10.0\Npgsql.dll
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\bin\Release\net10.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Release\net10.0\compressed\p7ve04l8bg-{0}-zy5jnte7zv-zy5jnte7zv.gz
+C:\Users\Adam\Desktop\дипломна работа\VolunteerPlatform\volunteerplatform\obj\Release\net10.0\compressed\71z5fp8n6n-{0}-12tsufcaoy-12tsufcaoy.gz

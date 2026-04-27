@@ -58,8 +58,7 @@ using (var scope = app.Services.CreateScope())
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         var context = services.GetRequiredService<ApplicationDbContext>();
         
-        var envDbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-        if (!string.IsNullOrEmpty(envDbUrl))
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DATABASE_URL")))
         {
             // На Render (PostgreSQL) използваме EnsureCreated, защото 
             // съществуващите миграции са специфични за SQL Server.
