@@ -64,6 +64,34 @@ namespace volunteerplatform.Data
             }, "Org123!", "Organizer");
 
             // ─── 3. SEED INITIATIVES AND ACTIVITY ─────────────────────────────────────
+
+            // Patch: backfill Category & Region on existing initiatives missing them
+            var allCategories = new[] { "Environment", "Social", "IT", "Animal Welfare", "Art", "Social Media" };
+            var allCities = new[] { "Sofia", "Plovdiv", "Varna", "Burgas", "Ruse", "Stara Zagora", "Pleven", "Veliko Tarnovo", "Blagoevgrad" };
+            var patchRandom = new Random(42);
+            var uncategorized = context.Initiatives.Where(i => i.Category == null || i.Region == null).ToList();
+            foreach (var ini in uncategorized)
+            {
+                if (ini.Category == null)
+                    ini.Category = allCategories[patchRandom.Next(allCategories.Length)];
+                if (ini.Region == null)
+                {
+                    // Try to derive region from location string first
+                    var matched = allCities.FirstOrDefault(c => ini.Location != null && ini.Location.StartsWith(c));
+                    ini.Region = matched ?? allCities[patchRandom.Next(allCities.Length)];
+                }
+            }
+            if (uncategorized.Any()) await context.SaveChangesAsync();
+
+            // Patch: auto-finish initiatives whose date has passed
+            var now = DateTime.Now;
+            var overdueInitiatives = context.Initiatives
+                .Where(i => i.DateAndTime < now && i.Status != MissionStatus.Finished)
+                .ToList();
+            foreach (var ini in overdueInitiatives)
+                ini.Status = MissionStatus.Finished;
+            if (overdueInitiatives.Any()) await context.SaveChangesAsync();
+
             if (!context.Initiatives.Any())
             {
                 var random = new Random();
@@ -77,28 +105,34 @@ namespace volunteerplatform.Data
                         Desc = "Help us preserve our natural beauty. We will be working on restoring local green spaces, planting native species, and cleaning up debris from sensitive ecological areas."
                     },
                     new { 
-                        Cat = "Social Support", 
+                        Cat = "Social", 
                         Titles = new[] { "Homeless Kitchen Helper", "Food Bank Distribution", "Senior Companion Program", "Refugee Support Center", "Toy Drive for Charity", "Clothing Distribution" },
                         Skills = new[] { "Empathy", "Cooking", "Organization", "Languages" },
                         Desc = "Make a direct impact on the lives of those in need. From preparing hot meals to providing companionship to the elderly, your presence matters."
                     },
                     new { 
-                        Cat = "Education & Tech", 
+                        Cat = "IT", 
                         Titles = new[] { "Coding for Kids", "Teach English Online", "Senior Digital Literacy", "Library Archive Scanning", "Science Fair Mentoring", "Youth Career Workshop" },
                         Skills = new[] { "IT", "Languages", "Teaching", "Public Speaking" },
                         Desc = "Knowledge is power. Join our educational initiatives to bridge the digital divide and provide learning opportunities for children and seniors alike."
                     },
                     new { 
-                        Cat = "Animal Care", 
+                        Cat = "Animal Welfare", 
                         Titles = new[] { "Dog Shelter Volunteering", "Cat Cafe Socialization", "Wildlife Rehab Support", "Horse Therapy Assistant", "Vet Clinic Volunteer", "Stray Census Project" },
                         Skills = new[] { "Animal Care", "Patience", "Dog Handling", "First Aid" },
                         Desc = "Be a voice for the voiceless. Help our local animal shelters with daily care, socialization, and maintenance of their facilities."
                     },
                     new { 
-                        Cat = "Arts & Culture", 
+                        Cat = "Art", 
                         Titles = new[] { "Gallery Guide", "Theater Workshop", "Community Mural Painting", "Music Festival Support", "Heritage Site Cleanup", "Photography for NGOs" },
                         Skills = new[] { "Art", "Design", "Event Planning", "Photography" },
                         Desc = "Promote and preserve our local culture. Join us in organizing events, creating public art, or supporting local cultural institutions."
+                    },
+                    new { 
+                        Cat = "Social Media", 
+                        Titles = new[] { "NGO Social Media Campaign", "Awareness Content Creator", "Digital Marketing for Causes", "Community Blog Editor", "Podcast for Good" },
+                        Skills = new[] { "Social Media", "Design", "Communication", "Writing" },
+                        Desc = "Use your digital skills to amplify the message of good causes. Help NGOs and community organizations grow their online presence and reach more people."
                     }
                 };
 
@@ -150,6 +184,8 @@ namespace volunteerplatform.Data
                     {
                         Title = $"{template.Titles[random.Next(template.Titles.Length)]} in {city}",
                         Description = $"{template.Desc} This initiative is hosted by our dedicated team in {city}. Participants will receive certifications and a welcome package.",
+                        Category = template.Cat,
+                        Region = city,
                         Location = city + ", Bulgaria",
                         Latitude = coords.Lat + latOffset,
                         Longitude = coords.Lng + lngOffset,
@@ -237,43 +273,6 @@ namespace volunteerplatform.Data
                     await UpdateRating(userManager, vol.Id, context);
                 }
 
-                // ─── 5. SEED TEAMS ───────────────────────────────────────────────────────
-                if (!context.Teams.Any())
-                {
-                    var teamTemplates = new[] {
-                        new { Name = "Eco Warriors", Desc = "Specialized in park restoration and mountain cleaning." },
-                        new { Name = "Digital Tutors", Desc = "Tech-savvy volunteers teaching elderly people how to use devices." },
-                        new { Name = "Paws & Hearts", Desc = "Dedicated animal lover team supporting local shelters." },
-                        new { Name = "Crisis Response", Desc = "Heavy lifters and first-aid certified rapid response team." }
-                    };
-
-                    foreach (var tt in teamTemplates)
-                    {
-                        var team = new Team
-                        {
-                            Name = tt.Name,
-                            Description = tt.Desc,
-                            CreatedAt = DateTime.Now.AddMonths(-2),
-                            LeaderId = admin.Id
-                        };
-                        context.Teams.Add(team);
-                        await context.SaveChangesAsync();
-
-                        // Add some random volunteers to the team
-                        var randomMembers = volunteers.OrderBy(_ => random.Next()).Take(5).ToList();
-                        foreach (var m in randomMembers)
-                        {
-                            context.TeamMembers.Add(new TeamMember
-                            {
-                                TeamId = team.Id,
-                                MemberId = m.Id,
-                                JoinedAt = DateTime.Now.AddDays(-random.Next(1, 40)),
-                                Role = "General Volunteer"
-                            });
-                        }
-                    }
-                    await context.SaveChangesAsync();
-                }
             }
         }
 

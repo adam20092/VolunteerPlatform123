@@ -2,20 +2,15 @@
 @{
     ViewData["Title"] = "Mission Map Discovery";
     Layout = "_Layout";
-    ViewData["HideLayout"] = true; // Initially hide for full-screen focus
 }
 
 <style>
     /* ── Page layout ─────────────────────────────────── */
     .map-page-wrapper {
         display: flex;
-        height: 100vh;
+        height: calc(100vh - 60px);
         overflow: hidden;
-        position: fixed;
-        top: 0;
-        left: 0;
         width: 100%;
-        z-index: 2000;
         background: var(--card-bg);
     }
 
@@ -340,11 +335,10 @@
     [data-theme='dark'] .exit-map-btn { background: #111; color: #fff; border: 1px solid #333; }
     .exit-map-btn:hover { background: #fff; transform: translateY(-2px); }
 </style>
-
-<div class="map-page-wrapper" id="mapWrapper">
-
-    <!-- Sidebar -->
-    <aside class="map-sidebar" id="mapSidebar">
+<div class="container-fluid p-0">
+    <div class="map-page-wrapper" id="mapWrapper">
+        <!-- Sidebar -->
+        <aside class="map-sidebar" id="mapSidebar">
         <div class="map-sidebar-header">
             <h4><i class="bi bi-map me-2"></i>Mission Discovery</h4>
             <p>Click a mission or a pin to explore details</p>
@@ -418,11 +412,6 @@
     <!-- Map -->
     <div style="position:relative; flex:1; height:100%;">
 
-        <!-- Exit Button -->
-        <button class="exit-map-btn" onclick="window.location.href='/Initiatives/Index'">
-            <i class="bi bi-arrow-left"></i> Back to Platform
-        </button>
-
         <!-- Mobile sidebar toggle -->
         <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Toggle mission list">
             <i class="bi bi-list" id="sidebarToggleIcon"></i>
@@ -438,19 +427,12 @@
     </div>
 
 </div>
+</div>
 
 @section Scripts {
 <script>
-    // Hide header and footer from parent layout via CSS
-    document.addEventListener('DOMContentLoaded', function() {
-        const header = document.querySelector('header');
-        const footer = document.querySelector('footer');
-        if (header) header.style.display = 'none';
-        if (footer) footer.style.display = 'none';
-        document.body.style.overflow = 'hidden';
-    });
-
-(function () {
+    // Map initialization
+    (function () {
     // ── Custom marker icon ──────────────────────────────────────────────────
     function makeIcon(color) {
         var svg = encodeURIComponent(

@@ -11,6 +11,16 @@ namespace volunteerplatform.Controllers
         private readonly IInitiativeService _initiativeService;
         private readonly UserManager<ApplicationUser> _userManager;
 
+        private static readonly List<string> CategoriesList = new List<string>
+        {
+            "Art", "IT", "Social Media", "Environment", "Education", "Health", "Social", "Animal Welfare", "Culture", "Sports", "Other"
+        };
+
+        private static readonly List<string> RegionsList = new List<string>
+        {
+            "Sofia", "Plovdiv", "Varna", "Burgas", "Ruse", "Stara Zagora", "Pleven", "Sliven", "Dobrich", "Shumen", "Pernik", "Haskovo", "Blagoevgrad", "Veliko Tarnovo", "Pazardzhik", "Vratsa", "Gabrovo", "Asenovgrad", "Kazanlak", "Kardzhali", "Kyustendil", "Montana", "Lovech", "Targovishte", "Razgrad", "Silistra", "Smolyan", "Yambol"
+        };
+
         public InitiativesController(IInitiativeService initiativeService, UserManager<ApplicationUser> userManager)
         {
             _initiativeService = initiativeService;
@@ -25,11 +35,9 @@ namespace volunteerplatform.Controllers
             ViewData["CurrentRegion"] = region;
 
             var initiatives = await _initiativeService.GetAllInitiativesAsync(searchString, category, region);
-            var allInitiatives = await _initiativeService.GetAllInitiativesAsync();
-
-            // Populate filter options dynamically
-            ViewBag.Categories = allInitiatives.Select(i => i.Category).Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(c => c).ToList();
-            ViewBag.Regions = allInitiatives.Select(i => i.Region).Where(r => !string.IsNullOrEmpty(r)).Distinct().OrderBy(r => r).ToList();
+            
+            ViewBag.Categories = CategoriesList;
+            ViewBag.Regions = RegionsList;
 
             return View(initiatives);
         }
@@ -81,6 +89,8 @@ namespace volunteerplatform.Controllers
         [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
         public IActionResult Create()
         {
+            ViewBag.Categories = CategoriesList;
+            ViewBag.Regions = RegionsList;
             return View();
         }
 
@@ -98,6 +108,8 @@ namespace volunteerplatform.Controllers
                 await _initiativeService.CreateInitiativeAsync(initiative, user.Id);
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Categories = CategoriesList;
+            ViewBag.Regions = RegionsList;
             return View(initiative);
         }
 

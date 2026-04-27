@@ -34,21 +34,21 @@
                     </div>
                     <div class="col-12 col-md-6 col-lg-3">
                         <label class="form-label fw-bold small text-muted">Category</label>
-                        <select name="category" class="form-select">
+                        <select name="category" class="form-select rounded-pill border-0 shadow-sm ps-4">
                             <option value="">All Categories</option>
-                            @foreach (var cat in ViewBag.Categories as List<string>)
+                            @foreach (var cat in (ViewBag.Categories as List<string> ?? new List<string>()))
                             {
-                                <option value="@cat" selected="@(ViewData["CurrentCategory"]?.ToString() == cat)">@cat</option>
+                                <option value="@cat" selected="@(Context.Request.Query["category"] == cat)">@cat</option>
                             }
                         </select>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-3">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold small text-muted">Region</label>
-                        <select name="region" class="form-select">
+                        <select name="region" class="form-select rounded-pill border-0 shadow-sm ps-4">
                             <option value="">All Regions</option>
-                            @foreach (var reg in ViewBag.Regions as List<string>)
+                            @foreach (var reg in (ViewBag.Regions as List<string> ?? new List<string>()))
                             {
-                                <option value="@reg" selected="@(ViewData["CurrentRegion"]?.ToString() == reg)">@reg</option>
+                                <option value="@reg" selected="@(Context.Request.Query["region"] == reg)">@reg</option>
                             }
                         </select>
                     </div>

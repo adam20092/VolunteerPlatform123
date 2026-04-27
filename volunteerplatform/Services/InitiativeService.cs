@@ -22,6 +22,18 @@ namespace volunteerplatform.Services
 
         public async Task<IEnumerable<Initiative>> GetAllInitiativesAsync(string? searchString = null, string? category = null, string? region = null)
         {
+            // Auto-finish any initiatives whose date has passed
+            var now = DateTime.Now;
+            var overdue = await _context.Initiatives
+                .Where(i => i.DateAndTime < now && i.Status != MissionStatus.Finished)
+                .ToListAsync();
+            if (overdue.Count > 0)
+            {
+                foreach (var ini in overdue)
+                    ini.Status = MissionStatus.Finished;
+                await _context.SaveChangesAsync();
+            }
+
             var initiatives = _context.Initiatives
                 .Include(i => i.Organizer)
                 .Include(i => i.Enrolments)
