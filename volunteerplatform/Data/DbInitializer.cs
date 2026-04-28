@@ -92,7 +92,7 @@ namespace volunteerplatform.Data
                 ini.Status = MissionStatus.Finished;
             if (overdueInitiatives.Any()) await context.SaveChangesAsync();
 
-            if (!context.Initiatives.Any())
+            if (context.Initiatives.Count() < 100)
             {
                 var random = new Random();
                 var cities = new[] { "Sofia", "Plovdiv", "Varna", "Burgas", "Ruse", "Stara Zagora", "Pleven", "Veliko Tarnovo", "Blagoevgrad" };
@@ -152,7 +152,8 @@ namespace volunteerplatform.Data
 
                 // Create a pool of volunteers for mass seeding
                 var volunteers = new List<ApplicationUser>();
-                for (int i = 1; i <= 50; i++)
+                int currentVolunteers = context.Users.Count(u => u.Email!.Contains("volunteer"));
+                for (int i = currentVolunteers + 1; i <= 100; i++)
                 {
                     var email = $"volunteer{i}@example.com";
                     volunteers.Add(await EnsureUser(userManager, new ApplicationUser
@@ -170,12 +171,13 @@ namespace volunteerplatform.Data
 
                 // Create Initiatives
                 var organizers = new List<string> { basicOrg1.Id, basicOrg2.Id, admin.Id };
-                for (int i = 1; i <= 60; i++)
+                int currentInitiatives = context.Initiatives.Count();
+                for (int i = currentInitiatives + 1; i <= 120; i++)
                 {
                     var template = categoryTemplates[random.Next(categoryTemplates.Length)];
                     var city = cities[random.Next(cities.Length)];
                     var coords = cityCoords[city];
-                    var status = i <= 20 ? MissionStatus.Finished : (i <= 40 ? MissionStatus.Active : MissionStatus.Filled);
+                    var status = i <= 40 ? MissionStatus.Finished : (i <= 80 ? MissionStatus.Active : MissionStatus.Filled);
 
                     double latOffset = (random.NextDouble() - 0.5) * 0.08;
                     double lngOffset = (random.NextDouble() - 0.5) * 0.08;
@@ -189,7 +191,7 @@ namespace volunteerplatform.Data
                         Location = city + ", Bulgaria",
                         Latitude = coords.Lat + latOffset,
                         Longitude = coords.Lng + lngOffset,
-                        DateAndTime = DateTime.UtcNow.AddDays(status == MissionStatus.Finished ? -random.Next(30, 90) : random.Next(10, 60)),
+                        DateAndTime = DateTimeOffset.UtcNow.AddDays(status == MissionStatus.Finished ? -random.Next(30, 90) : random.Next(10, 60)),
                         RequiredVolunteers = 5 + random.Next(25),
                         RequiredSkills = string.Join(", ", template.Skills.OrderBy(_ => random.Next()).Take(2)),
                         OrganizerId = organizers[random.Next(organizers.Count)],
