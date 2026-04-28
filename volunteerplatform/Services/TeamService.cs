@@ -51,7 +51,7 @@ namespace volunteerplatform.Services
             {
                 TeamId = teamId,
                 MemberId = userId,
-                JoinedAt = DateTime.Now,
+                JoinedAt = DateTime.UtcNow,
                 Role = "General Volunteer"
             };
 
@@ -75,7 +75,7 @@ namespace volunteerplatform.Services
         public async Task<Team> CreateTeamAsync(Team team, string leaderId)
         {
             team.LeaderId = leaderId;
-            team.CreatedAt = DateTime.Now;
+            team.CreatedAt = DateTime.UtcNow;
             _context.Teams.Add(team);
             await _context.SaveChangesAsync();
             

@@ -13,7 +13,7 @@ namespace volunteerplatform.Models
 
         public string? Description { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Team Leader (Organizer or experienced Volunteer)
         public string? LeaderId { get; set; }
@@ -39,7 +39,7 @@ namespace volunteerplatform.Models
         [ForeignKey("MemberId")]
         public ApplicationUser Member { get; set; } = null!;
 
-        public DateTime JoinedAt { get; set; } = DateTime.Now;
+        public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
         
         public string? Role { get; set; } // e.g., "Coordinator", "Technician", "General Volunteer"
     }

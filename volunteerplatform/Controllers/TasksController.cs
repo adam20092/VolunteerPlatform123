@@ -39,7 +39,7 @@ namespace volunteerplatform.Controllers
                 InitiativeId = initiativeId,
                 Title = title,
                 Description = description,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 IsCompleted = false
             };
 
@@ -76,7 +76,7 @@ namespace volunteerplatform.Controllers
             task.IsCompleted = !task.IsCompleted;
             if (task.IsCompleted)
             {
-                task.CompletedAt = DateTime.Now;
+                task.CompletedAt = DateTime.UtcNow;
                 task.CompletedByUserId = user.Id;
             }
             else

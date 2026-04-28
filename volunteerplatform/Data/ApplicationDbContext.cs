@@ -47,6 +47,20 @@ namespace volunteerplatform.Data
                 .WithMany(i => i.Tasks)
                 .HasForeignKey(t => t.InitiativeId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Global conversion for DateTime to UTC for PostgreSQL
+            foreach (var entityType in builder.Model.GetEntityTypes())
+            {
+                foreach (var property in entityType.GetProperties())
+                {
+                    if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                    {
+                        property.SetValueConverter(new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
+                            v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
+                            v => DateTime.SpecifyKind(v, DateTimeKind.Utc)));
+                    }
+                }
+            }
         }
     }
 }

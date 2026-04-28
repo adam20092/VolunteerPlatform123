@@ -27,7 +27,7 @@ namespace volunteerplatform.Services
                 InitiativeId = initiativeId,
                 VolunteerId = volunteerId,
                 Status = EnrolmentStatus.Pending,
-                AppliedOn = DateTime.Now
+                AppliedOn = DateTime.UtcNow
             };
 
             _context.Enrolments.Add(enrolment);

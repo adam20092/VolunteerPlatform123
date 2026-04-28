@@ -25,6 +25,6 @@ namespace volunteerplatform.Models
         [ForeignKey("InitiativeId")]
         public Initiative Initiative { get; set; } = null!;
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

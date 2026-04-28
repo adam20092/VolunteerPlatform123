@@ -4,6 +4,9 @@ using volunteerplatform.Data;
 using volunteerplatform.Models;
 using volunteerplatform.Services;
 
+// Fix for PostgreSQL DateTime issue
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

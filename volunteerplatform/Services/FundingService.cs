@@ -30,7 +30,7 @@ namespace volunteerplatform.Services
                 donation.DonorId = userId;
             }
 
-            donation.DonatedOn = DateTime.Now;
+            donation.DonatedOn = DateTime.UtcNow;
 
             _context.Donations.Add(donation);
             initiative.CurrentAmount += donation.Amount;
