@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PROJECT: "VolunteerPlatform/volunteerplatform/volunteerplatform.csproj"
+      PROJECT: "volunteerplatform/volunteerplatform.csproj"
       PUBLISH_DIR: "./publish_output"
 
     steps:
