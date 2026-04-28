@@ -84,7 +84,7 @@ namespace volunteerplatform.Data
             if (uncategorized.Any()) await context.SaveChangesAsync();
 
             // Patch: auto-finish initiatives whose date has passed
-            var now = DateTime.UtcNow;
+            var now = DateTimeOffset.UtcNow;
             var overdueInitiatives = context.Initiatives
                 .Where(i => i.DateAndTime < now && i.Status != MissionStatus.Finished)
                 .ToList();

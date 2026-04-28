@@ -13,7 +13,7 @@ namespace volunteerplatform.Models
 
         public string? Description { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
         public string? OrganizerId { get; set; }
         [ForeignKey("OrganizerId")]

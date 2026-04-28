@@ -26,7 +26,7 @@ namespace volunteerplatform.Models
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
 
-        public DateTime DateAndTime { get; set; }
+        public DateTimeOffset DateAndTime { get; set; }
 
         public int RequiredVolunteers { get; set; }
         

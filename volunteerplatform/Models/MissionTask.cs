@@ -15,7 +15,7 @@ namespace volunteerplatform.Models
 
         public bool IsCompleted { get; set; } = false;
 
-        public DateTime? CompletedAt { get; set; }
+        public DateTimeOffset? CompletedAt { get; set; }
 
         public string? CompletedByUserId { get; set; }
         [ForeignKey("CompletedByUserId")]
@@ -25,6 +25,6 @@ namespace volunteerplatform.Models
         [ForeignKey("InitiativeId")]
         public Initiative Initiative { get; set; } = null!;
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     }
 }
