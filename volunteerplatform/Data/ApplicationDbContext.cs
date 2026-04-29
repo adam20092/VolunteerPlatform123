@@ -55,9 +55,13 @@ namespace volunteerplatform.Data
                 {
                     if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
                     {
+                        // Force PostgreSQL to use 'timestamp' (without time zone) 
+                        // This is the most reliable way to avoid the UTC/Local kind error
+                        property.SetColumnType("timestamp without time zone");
+                        
                         property.SetValueConverter(new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
                             v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
-                            v => DateTime.SpecifyKind(v, DateTimeKind.Utc)));
+                            v => v));
                     }
                 }
             }
