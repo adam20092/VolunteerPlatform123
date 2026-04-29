@@ -43,8 +43,8 @@ jobs:
       # копира го в wwwroot, за да бъде включен в publish output-а.
       - name: Put index.html into wwwroot
         run: |
-          mkdir -p "VolunteerPlatform/volunteerplatform/wwwroot"
-          cp -f "index.html" "VolunteerPlatform/volunteerplatform/wwwroot/index.html"
+          mkdir -p "volunteerplatform/wwwroot"
+          cp -f "index.html" "volunteerplatform/wwwroot/index.html"
 
       - name: Publish
         run: dotnet publish "${{ env.PROJECT }}" -c Release --no-build -o "${{ env.PUBLISH_DIR }}"
