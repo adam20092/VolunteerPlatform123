@@ -84,7 +84,7 @@ namespace volunteerplatform.Data
             if (uncategorized.Any()) await context.SaveChangesAsync();
 
             // Patch: auto-finish initiatives whose date has passed
-            var now = DateTimeOffset.UtcNow;
+            var now = DateTime.UtcNow;
             var overdueInitiatives = context.Initiatives
                 .Where(i => i.DateAndTime < now && i.Status != MissionStatus.Finished)
                 .ToList();
@@ -191,7 +191,7 @@ namespace volunteerplatform.Data
                         Location = city + ", Bulgaria",
                         Latitude = coords.Lat + latOffset,
                         Longitude = coords.Lng + lngOffset,
-                        DateAndTime = DateTimeOffset.UtcNow.AddDays(status == MissionStatus.Finished ? -random.Next(30, 90) : random.Next(10, 60)),
+                        DateAndTime = DateTime.UtcNow.AddDays(status == MissionStatus.Finished ? -random.Next(30, 90) : random.Next(10, 60)),
                         RequiredVolunteers = 5 + random.Next(25),
                         RequiredSkills = string.Join(", ", template.Skills.OrderBy(_ => random.Next()).Take(2)),
                         OrganizerId = organizers[random.Next(organizers.Count)],

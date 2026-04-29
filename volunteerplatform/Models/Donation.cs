@@ -19,7 +19,7 @@ namespace volunteerplatform.Models
         [Range(1, 1000000)]
         public decimal Amount { get; set; }
 
-        public DateTimeOffset DonatedOn { get; set; } = DateTimeOffset.UtcNow;
+        public DateTime DonatedOn { get; set; } = DateTime.UtcNow;
 
         public string? Message { get; set; }
     }

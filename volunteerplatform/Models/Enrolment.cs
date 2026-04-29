@@ -24,7 +24,7 @@ namespace volunteerplatform.Models
 
         public EnrolmentStatus Status { get; set; } = EnrolmentStatus.Pending;
         
-        public DateTimeOffset AppliedOn { get; set; } = DateTimeOffset.UtcNow;
+        public DateTime AppliedOn { get; set; } = DateTime.UtcNow;
 
         public string? CertificateCode { get; set; }
     }
