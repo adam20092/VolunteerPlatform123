@@ -16,13 +16,15 @@ namespace volunteerplatform.Models.ViewModels
 
         // Volunteer Specifics
         public int? Age { get; set; }
-        public string Skills { get; set; } = string.Empty;
-        public string Availability { get; set; } = string.Empty;
-        public string Location { get; set; } = string.Empty;
+        public string? Skills { get; set; }
+        public string? Availability { get; set; }
+        public string? Location { get; set; }
 
         // Organizer Specifics
         [Display(Name = "Organization Name")]
-        public string OrganizationName { get; set; } = string.Empty;
+        public string? OrganizationName { get; set; }
+        
+        public int Rating { get; set; }
 
         public string StatusMessage { get; set; } = string.Empty;
     }

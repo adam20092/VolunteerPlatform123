@@ -14,6 +14,7 @@
             @if (Model.Status != volunteerplatform.Models.MissionStatus.Finished)
             {
                 <form asp-controller="Initiatives" asp-action="ToggleFilled" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
                     <button type="submit" class="btn @(Model.Status == volunteerplatform.Models.MissionStatus.Filled ? "btn-warning" : "btn-outline-warning") shadow-sm">
                         <i class="bi @(Model.Status == volunteerplatform.Models.MissionStatus.Filled ? "bi-person-plus" : "bi-person-fill-check") me-2"></i>
                         @(Model.Status == volunteerplatform.Models.MissionStatus.Filled ? "Reopen for Volunteers" : "Mark as Filled")

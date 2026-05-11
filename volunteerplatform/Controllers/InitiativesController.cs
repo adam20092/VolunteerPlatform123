@@ -121,6 +121,10 @@ namespace volunteerplatform.Controllers
             if (user == null) return Challenge();
 
             var myInitiatives = await _initiativeService.GetInitiativesByOrganizerAsync(user.Id);
+            
+            ViewBag.Categories = CategoriesList;
+            ViewBag.Regions = RegionsList;
+
             return View("Index", myInitiatives);
         }
 
@@ -179,13 +183,18 @@ namespace volunteerplatform.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
-        public async Task<IActionResult> ToggleFilled(int id)
+        public async Task<IActionResult> ToggleFilled(int id, string? returnUrl = null)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
             var result = await _initiativeService.ToggleFilledStatusAsync(id, user.Id, User.IsInRole("Admin") || User.IsInRole("SuperAdmin"));
             if (!result) return NotFound();
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
 
             return RedirectToAction("Manage", "Enrolments", new { id = id });
         }

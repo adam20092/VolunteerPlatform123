@@ -92,5 +92,32 @@ namespace VolunteerPlatform.Tests
                     "v1@test.com", "Vanya", "Test Mission"), Times.Once);
             }
         }
+        [Fact]
+        public async Task UpdateStatusAsync_SetsInitiativeToFilled_WhenQuotaReached()
+        {
+            // Arrange
+            var options = GetDbOptions("UpdateStatusFilled");
+            using (var context = new ApplicationDbContext(options))
+            {
+                var initiative = new Initiative { Id = 20, Title = "Quota Mission", RequiredVolunteers = 1, Status = MissionStatus.Active };
+                var enrolment = new Enrolment { Id = 200, InitiativeId = 20, Status = EnrolmentStatus.Pending, VolunteerId = "v2" };
+                
+                context.Initiatives.Add(initiative);
+                context.Enrolments.Add(enrolment);
+                await context.SaveChangesAsync();
+
+                // Clear context to force reload
+                context.ChangeTracker.Clear();
+
+                var service = new EnrolmentService(context, new Mock<IEmailService>().Object);
+
+                // Act
+                await service.UpdateStatusAsync(200, EnrolmentStatus.Approved);
+
+                // Assert
+                var updatedInitiative = await context.Initiatives.FindAsync(20);
+                Assert.Equal(MissionStatus.Filled, updatedInitiative?.Status);
+            }
+        }
     }
 }

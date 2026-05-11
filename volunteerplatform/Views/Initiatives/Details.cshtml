@@ -216,6 +216,17 @@
                          else if (User.IsInRole("Organizer") && Model.OrganizerId == currentUser?.Id || User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
                          {
                              <a asp-controller="Enrolments" asp-action="Manage" asp-route-id="@Model.Id" class="btn btn-warning btn-lg w-100 rounded-pill shadow-sm mb-3">Manage Candidates</a>
+                             
+                             @if (Model.Status != volunteerplatform.Models.MissionStatus.Finished)
+                             {
+                                 <form asp-controller="Initiatives" asp-action="ToggleFilled" asp-route-id="@Model.Id" method="post" class="mb-3">
+                                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                     <button type="submit" class="btn @(Model.Status == volunteerplatform.Models.MissionStatus.Filled ? "btn-info" : "btn-outline-info") btn-lg w-100 rounded-pill shadow-sm">
+                                         <i class="bi @(Model.Status == volunteerplatform.Models.MissionStatus.Filled ? "bi-person-plus" : "bi-person-fill-check") me-2"></i>
+                                         @(Model.Status == volunteerplatform.Models.MissionStatus.Filled ? "Reopen for Volunteers" : "Mark as Filled")
+                                     </button>
+                                 </form>
+                             }
                              <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-lg w-100 rounded-pill shadow-sm mb-3">Delete Mission</a>
                          }
                     }

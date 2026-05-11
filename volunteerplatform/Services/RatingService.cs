@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using volunteerplatform.Data;
 using volunteerplatform.Models;
 
@@ -17,10 +18,40 @@ namespace volunteerplatform.Services
             if (rating.Score < 1 || rating.Score > 5)
                 return false;
 
-            rating.OrganizerId = organizerId;
+            // Check if rating already exists for this mission/volunteer
+            var existing = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.InitiativeId == rating.InitiativeId && r.VolunteerId == rating.VolunteerId);
 
-            _context.Ratings.Add(rating);
+            if (existing != null)
+            {
+                existing.Score = rating.Score;
+                existing.Comment = rating.Comment;
+                existing.OrganizerId = organizerId;
+            }
+            else
+            {
+                rating.OrganizerId = organizerId;
+                _context.Ratings.Add(rating);
+            }
+
             await _context.SaveChangesAsync();
+
+            // Update average rating for the volunteer
+            var volunteer = await _context.Users.FindAsync(rating.VolunteerId);
+            if (volunteer != null)
+            {
+                var ratings = await _context.Ratings
+                    .Where(r => r.VolunteerId == rating.VolunteerId)
+                    .Select(r => r.Score)
+                    .ToListAsync();
+
+                if (ratings.Any())
+                {
+                    volunteer.Rating = (int)Math.Round(ratings.Average());
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             return true;
         }
     }

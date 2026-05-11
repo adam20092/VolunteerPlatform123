@@ -276,6 +276,50 @@ namespace volunteerplatform.Data
                 }
 
             }
+
+            // ─── 5. SPECIFIC FULL MISSION FOR TESTING ───────────────────────────────
+            if (!context.Initiatives.Any(i => i.Title == "Full Test Mission"))
+            {
+                var organizer = await userManager.FindByEmailAsync("org1@test.com");
+                if (organizer != null)
+                {
+                    var fullMission = new Initiative
+                    {
+                        Title = "Full Test Mission",
+                        Description = "This mission is intentionally seeded to be full of candidates for testing purposes.",
+                        Category = "Social",
+                        Region = "Sofia",
+                        Location = "Sofia, Bulgaria",
+                        Latitude = 42.6977,
+                        Longitude = 23.3219,
+                        DateAndTime = DateTime.UtcNow.AddDays(30),
+                        RequiredVolunteers = 5,
+                        RequiredSkills = "Communication, Organization",
+                        OrganizerId = organizer.Id,
+                        Status = MissionStatus.Filled
+                    };
+                    context.Initiatives.Add(fullMission);
+                    await context.SaveChangesAsync();
+
+                    // Get some volunteers
+                    var testVolunteers = await context.Users
+                        .Where(u => u.Email!.Contains("volunteer"))
+                        .Take(5)
+                        .ToListAsync();
+
+                    foreach (var vol in testVolunteers)
+                    {
+                        context.Enrolments.Add(new Enrolment
+                        {
+                            InitiativeId = fullMission.Id,
+                            VolunteerId = vol.Id,
+                            Status = EnrolmentStatus.Approved,
+                            AppliedOn = DateTime.UtcNow.AddDays(-1)
+                        });
+                    }
+                    await context.SaveChangesAsync();
+                }
+            }
         }
 
         // ─── UTILS ───────────────────────────────────────────────────────────────────

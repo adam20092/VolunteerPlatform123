@@ -37,7 +37,8 @@ namespace volunteerplatform.Services
                 Skills = user.Skills ?? string.Empty,
                 Availability = user.Availability ?? string.Empty,
                 Location = user.Location ?? string.Empty,
-                OrganizationName = user.OrganizationName ?? string.Empty
+                OrganizationName = user.OrganizationName ?? string.Empty,
+                Rating = user.Rating
             };
         }
 

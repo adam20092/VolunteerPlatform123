@@ -88,24 +88,42 @@ namespace VolunteerPlatform.Tests
         }
 
         [Fact]
-        public async Task FinishInitiativeAsync_UpdatesStatus()
+        public async Task ToggleFilledStatusAsync_TogglesBetweenActiveAndFilled()
         {
             // Arrange
-            using var context = GetDbContext("FinishInitiative");
-            var organizer = new ApplicationUser { Id = "admin", UserName = "admin" };
-            context.Users.Add(organizer);
-            var initiative = new Initiative { Id = 501, Title = "F-Mission", OrganizerId = "admin", Status = MissionStatus.Active };
+            using var context = GetDbContext("ToggleStatus");
+            var initiative = new Initiative { Id = 601, Title = "Status Toggle Mission", OrganizerId = "org-1", Status = MissionStatus.Active };
             context.Initiatives.Add(initiative);
             await context.SaveChangesAsync();
-
             var service = new InitiativeService(context, null!, null!);
 
-            // Act
-            await service.FinishInitiativeAsync(501, "admin", true);
+            // Act 1: Active -> Filled
+            await service.ToggleFilledStatusAsync(601, "org-1", false);
+            // Assert 1
+            Assert.Equal(MissionStatus.Filled, initiative.Status);
+
+            // Act 2: Filled -> Active
+            await service.ToggleFilledStatusAsync(601, "org-1", false);
+            // Assert 2
+            Assert.Equal(MissionStatus.Active, initiative.Status);
+        }
+
+        [Fact]
+        public async Task GetAllInitiativesAsync_BilingualSearch_ReturnsCorrectResults()
+        {
+            // Arrange
+            using var context = GetDbContext("BilingualSearch");
+            context.Initiatives.Add(new Initiative { Title = "Clean the Park", Category = "Environment" });
+            context.Initiatives.Add(new Initiative { Title = "Social Work", Category = "Social" });
+            await context.SaveChangesAsync();
+            var service = new InitiativeService(context, null!, null!);
+
+            // Act: Search with Bulgarian word for Environment
+            var results = await service.GetAllInitiativesAsync(searchString: "Околна среда");
 
             // Assert
-            var updated = await context.Initiatives.FindAsync(501);
-            Assert.Equal(MissionStatus.Finished, updated?.Status);
+            Assert.Single(results);
+            Assert.Equal("Environment", results.First().Category);
         }
     }
 }
