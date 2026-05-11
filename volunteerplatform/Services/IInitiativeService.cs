@@ -11,5 +11,6 @@ namespace volunteerplatform.Services
         Task<IEnumerable<Initiative>> GetInitiativesByOrganizerAsync(string organizerId);
         Task<bool> DeleteInitiativeAsync(int id, string userId, bool isAdmin);
         Task<bool> FinishInitiativeAsync(int id, string userId, bool isAdmin);
+        Task<bool> ToggleFilledStatusAsync(int id, string userId, bool isAdmin);
     }
 }

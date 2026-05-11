@@ -49,19 +49,18 @@ namespace volunteerplatform.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Global conversion for DateTime to UTC for PostgreSQL
-            foreach (var entityType in builder.Model.GetEntityTypes())
+            if (Database.ProviderName == "Npgsql.EntityFrameworkCore.PostgreSQL")
             {
-                foreach (var property in entityType.GetProperties())
+                foreach (var entityType in builder.Model.GetEntityTypes())
                 {
-                    if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                    foreach (var property in entityType.GetProperties())
                     {
-                        // Force PostgreSQL to use 'timestamp' (without time zone) 
-                        // This is the most reliable way to avoid the UTC/Local kind error
-                        property.SetColumnType("timestamp without time zone");
-                        
-                        property.SetValueConverter(new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
-                            v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
-                            v => v));
+                        if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                        {
+                            // Force PostgreSQL to use 'timestamp' (without time zone) 
+                            // This is the most reliable way to avoid the UTC/Local kind error
+                            property.SetColumnType("timestamp without time zone");
+                        }
                     }
                 }
             }

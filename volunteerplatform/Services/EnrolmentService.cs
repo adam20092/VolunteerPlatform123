@@ -55,7 +55,7 @@ namespace volunteerplatform.Services
         {
             var enrolment = await _context.Enrolments
                 .Include(e => e.Volunteer)
-                .Include(e => e.Initiative)
+                .Include(e => e.Initiative).ThenInclude(i => i!.Enrolments)
                 .FirstOrDefaultAsync(e => e.Id == enrolmentId);
 
             if (enrolment == null) return false;
@@ -63,6 +63,17 @@ namespace volunteerplatform.Services
             var oldStatus = enrolment.Status;
             enrolment.Status = status;
             await _context.SaveChangesAsync();
+
+            // Auto-fill logic: if approved, check if mission is now full
+            if (status == EnrolmentStatus.Approved && enrolment.Initiative != null && enrolment.Initiative.Status == MissionStatus.Active)
+            {
+                var approvedCount = enrolment.Initiative.Enrolments!.Count(e => e.Status == EnrolmentStatus.Approved);
+                if (approvedCount >= enrolment.Initiative.RequiredVolunteers)
+                {
+                    enrolment.Initiative.Status = MissionStatus.Filled;
+                    await _context.SaveChangesAsync();
+                }
+            }
 
             // Send email if approved
             if (status == EnrolmentStatus.Approved && oldStatus != EnrolmentStatus.Approved)

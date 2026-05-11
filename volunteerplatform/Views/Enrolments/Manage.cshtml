@@ -13,7 +13,13 @@
          <div class="d-flex gap-2">
             @if (Model.Status != volunteerplatform.Models.MissionStatus.Finished)
             {
-                <form asp-controller="Initiatives" asp-action="Finish" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Are you sure? This will finalize the mission and allow volunteers to receive certificates.')">
+                <form asp-controller="Initiatives" asp-action="ToggleFilled" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    <button type="submit" class="btn @(Model.Status == volunteerplatform.Models.MissionStatus.Filled ? "btn-warning" : "btn-outline-warning") shadow-sm">
+                        <i class="bi @(Model.Status == volunteerplatform.Models.MissionStatus.Filled ? "bi-person-plus" : "bi-person-fill-check") me-2"></i>
+                        @(Model.Status == volunteerplatform.Models.MissionStatus.Filled ? "Reopen for Volunteers" : "Mark as Filled")
+                    </button>
+                </form>
+                <form asp-controller="Initiatives" asp-action="Finish" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Are you sure? This will finalize the mission and allow volunteers to receive certificates.')" class="d-inline">
                     <button type="submit" class="btn btn-success shadow-sm">
                         <i class="bi bi-flag-fill me-2"></i> Finish Mission
                     </button>

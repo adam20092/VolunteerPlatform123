@@ -174,5 +174,20 @@ namespace volunteerplatform.Controllers
             TempData["Success"] = "Mission marked as finished! Volunteers can now download their certificates.";
             return RedirectToAction("Manage", "Enrolments", new { id = id });
         }
+
+        // POST: Initiatives/ToggleFilled/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
+        public async Task<IActionResult> ToggleFilled(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            var result = await _initiativeService.ToggleFilledStatusAsync(id, user.Id, User.IsInRole("Admin") || User.IsInRole("SuperAdmin"));
+            if (!result) return NotFound();
+
+            return RedirectToAction("Manage", "Enrolments", new { id = id });
+        }
     }
 }
