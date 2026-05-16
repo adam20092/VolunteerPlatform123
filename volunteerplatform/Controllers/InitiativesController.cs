@@ -100,6 +100,11 @@ namespace volunteerplatform.Controllers
         [Authorize(Roles = "Organizer,Admin,SuperAdmin")]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,Category,Region,Location,Latitude,Longitude,DateAndTime,RequiredVolunteers,RequiredSkills")] Initiative initiative)
         {
+            if (initiative.DateAndTime < DateTime.Now)
+            {
+                ModelState.AddModelError("DateAndTime", "The mission date cannot be in the past.");
+            }
+
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);

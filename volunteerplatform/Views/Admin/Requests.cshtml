@@ -26,6 +26,43 @@
         </div>
     }
 
+    <div class="card shadow-sm mb-4 border-0 rounded-4">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Search</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="searchTerm" class="form-control border-start-0" placeholder="Name or Mission..." value="@ViewBag.SearchTerm">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Status</label>
+                    <select name="statusFilter" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="Pending" selected="@(ViewBag.StatusFilter == "Pending")">Pending</option>
+                        <option value="Approved" selected="@(ViewBag.StatusFilter == "Approved")">Approved</option>
+                        <option value="Rejected" selected="@(ViewBag.StatusFilter == "Rejected")">Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Sort By</label>
+                    <select name="sortBy" class="form-select">
+                        <option value="date_desc" selected="@(ViewBag.SortBy == "date_desc")">Newest First</option>
+                        <option value="date_asc" selected="@(ViewBag.SortBy == "date_asc")">Oldest First</option>
+                        <option value="name_asc" selected="@(ViewBag.SortBy == "name_asc")">Volunteer Name (A-Z)</option>
+                        <option value="mission_asc" selected="@(ViewBag.SortBy == "mission_asc")">Mission Title (A-Z)</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                        <i class="bi bi-funnel me-2"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="card shadow-sm">
         <div class="card-body">
             @if (!Model.Any())

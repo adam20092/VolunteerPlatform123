@@ -78,7 +78,7 @@
                             </div>
                             <div class="col-md-6 mb-4">
                                 <label asp-for="DateAndTime" class="form-label fw-bold small text-uppercase text-muted">Date & Time</label>
-                                <input asp-for="DateAndTime" class="form-control" />
+                                <input asp-for="DateAndTime" class="form-control" min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
                                 <span asp-validation-for="DateAndTime" class="text-danger"></span>
                             </div>
                         </div>

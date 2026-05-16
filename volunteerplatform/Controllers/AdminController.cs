@@ -28,9 +28,13 @@ namespace volunteerplatform.Controllers
             return View(users);
         }
 
-        public async Task<IActionResult> Requests()
+        public async Task<IActionResult> Requests(string? searchTerm, string? statusFilter, string? sortBy)
         {
-            var requests = await _adminService.GetAllRequestsAsync();
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.StatusFilter = statusFilter;
+            ViewBag.SortBy = sortBy;
+
+            var requests = await _adminService.GetAllRequestsAsync(searchTerm, statusFilter, sortBy);
             return View(requests);
         }
 

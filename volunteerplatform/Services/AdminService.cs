@@ -9,7 +9,7 @@ namespace volunteerplatform.Services
     {
         Task<AdminDashboardViewModel> GetDashboardStatsAsync();
         Task<List<UserAdminViewModel>> GetAllUsersAsync();
-        Task<List<Enrolment>> GetAllRequestsAsync();
+        Task<List<Enrolment>> GetAllRequestsAsync(string? searchTerm = null, string? statusFilter = null, string? sortBy = null);
         Task<bool> DeleteUserAsync(string userId);
     }
 
@@ -70,13 +70,40 @@ namespace volunteerplatform.Services
                 .ToList();
         }
 
-        public async Task<List<Enrolment>> GetAllRequestsAsync()
+        public async Task<List<Enrolment>> GetAllRequestsAsync(string? searchTerm = null, string? statusFilter = null, string? sortBy = null)
         {
-            return await _context.Enrolments
+            var query = _context.Enrolments
                 .Include(e => e.Initiative)
                 .Include(e => e.Volunteer)
-                .OrderByDescending(e => e.AppliedOn)
-                .ToListAsync();
+                .AsQueryable();
+
+            // Filtering by Search Term (Volunteer Name or Mission Title)
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(e => e.Volunteer.FullName.ToLower().Contains(searchTerm) || 
+                                       e.Initiative.Title.ToLower().Contains(searchTerm));
+            }
+
+            // Filtering by Status
+            if (!string.IsNullOrWhiteSpace(statusFilter) && Enum.TryParse<EnrolmentStatus>(statusFilter, out var status))
+            {
+                query = query.Where(e => e.Status == status);
+            }
+
+            // Sorting
+            query = sortBy switch
+            {
+                "date_asc" => query.OrderBy(e => e.AppliedOn),
+                "date_desc" => query.OrderByDescending(e => e.AppliedOn),
+                "name_asc" => query.OrderBy(e => e.Volunteer.FullName),
+                "name_desc" => query.OrderByDescending(e => e.Volunteer.FullName),
+                "mission_asc" => query.OrderBy(e => e.Initiative.Title),
+                "mission_desc" => query.OrderByDescending(e => e.Initiative.Title),
+                _ => query.OrderByDescending(e => e.AppliedOn) // Default
+            };
+
+            return await query.ToListAsync();
         }
 
         public async Task<bool> DeleteUserAsync(string userId)
